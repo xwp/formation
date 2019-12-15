@@ -13,7 +13,6 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		editor: './js/src/editor.js',
-		sentral: './js/src/sentral.js',
 		style: './js/src/style.scss',
 	},
 	output: {

@@ -170,13 +170,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * Register assets to be used for the class.
 	 */
 	public function register_assets() {
-		wp_register_script(
-			'formation-sentral-js',
-			$this->plugin->asset_url( 'js/dist/sentral.js' ),
-			[],
-			$this->plugin->asset_version(),
-			false
-		);
+
 		wp_register_script(
 			'formation-editor-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
@@ -208,7 +202,6 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 */
 	public function enqueue_editor_assets() {
 		if ( $this->is_active() ) {
-			wp_enqueue_script( 'formation-sentral-js' );
 			wp_enqueue_script( 'formation-editor-js' );
 			wp_enqueue_style( 'formation-editor-css' );
 
