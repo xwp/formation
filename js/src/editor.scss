@@ -1,0 +1,25 @@
+/**
+ * #.# Editor Styles
+ *
+ * CSS for just Backend enqueued after style.scss
+ * which makes it higher in priority.
+ */
+
+.editor-styles-wrapper {
+	.wp-block-formation-text-input,
+	.wp-block-formation-text-area{
+
+		label {
+			display : block;
+		}
+
+		input[type=text], textarea {
+			width : 100%;
+		}
+
+		.description {
+			font-size:0.8em;
+		}
+	}
+}
+

@@ -1,0 +1,11 @@
+.DS_Store
+.idea/
+.phpunit.result.cache
+.vagrant/
+console.log
+node_modules/
+phpcs.xml
+phpunit.xml
+vendor/
+css/
+js/dist/
