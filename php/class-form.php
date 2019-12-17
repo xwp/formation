@@ -174,11 +174,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		wp_register_script(
 			'formation-editor-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
-			[
-				'lodash',
-				'react',
-				'wp-block-editor',
-			],
+			null,
 			$this->plugin->asset_version(),
 			false
 		);
@@ -204,7 +200,6 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		if ( $this->is_active() ) {
 			wp_enqueue_script( 'formation-editor-js' );
 			wp_enqueue_style( 'formation-editor-css' );
-
 		}
 	}
 
