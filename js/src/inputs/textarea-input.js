@@ -10,6 +10,7 @@ const TextareaInput = ( props ) => {
         placeholder,
         description,
         required,
+        rows,
     } = props.attributes;
     return (
         <>
@@ -23,6 +24,7 @@ const TextareaInput = ( props ) => {
                 required={ required }
                 placeholder={ placeholder }
                 disabled={ 'disabled' }
+                rows={rows}
             ></textarea>
             { description &&
             <div className={ 'description' }>{ description }</div>

@@ -13,20 +13,10 @@ import FieldExtensions from '../controls/field-extension';
 import { TextInput as FieldInput } from '../inputs';
 
 const TextInput = ( override ) => {
-    let FieldInputWithFilters = withFilters( 'formation.fieldInput' )( FieldInput );
-    let FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( FieldSettings );
-    let FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( FieldExtensions );
-    if ( override ) {
-        if ( override.fieldInput ) {
-            FieldInputWithFilters = withFilters( 'formation.fieldInput' )( override.FieldInput );
-        }
-        if ( override.fieldSettings ) {
-            FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( override.FieldSettings );
-        }
-        if ( override.fieldExtensions ) {
-            FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( override.FieldInput );
-        }
-    }
+
+    let FieldInputWithFilters = withFilters( 'formation.fieldInput' )( override && override.fieldInput ? override.fieldInput : FieldInput );
+    let FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( override && override.fieldSettings ? override.fieldSettings : FieldSettings );
+    let FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( override && override.fieldExtensions ? override.fieldExtensions : FieldExtensions );
 
     return {
         title: __( 'Text Input' ),
@@ -56,8 +46,7 @@ const TextInput = ( override ) => {
             },
 
         },
-        edit: props => {
-
+        edit: ( props ) => {
             return (
                 <Fragment>
                     <InspectorControls>

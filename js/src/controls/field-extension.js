@@ -3,6 +3,6 @@
  */
 
 
-export const FieldExtension = ( {label} ) => (<></>);
+export const FieldExtension = () => (<></>);
 
 export default FieldExtension;

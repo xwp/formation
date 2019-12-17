@@ -60,14 +60,14 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	}
 
 	/**
-	 * @param $args
+	 * Render a form on the front end.
+	 *
+	 * @param array $args Args in shortcode.
 	 */
 	public function render_front_form( $args ) {
-		$post = get_post( $args['form'] );
-
-		$content = parse_blocks( $post->post_content );
-		var_dump( $content );
-
+		$post    = get_post( $args['form'] );
+		$content = do_blocks( $post->post_content );
+		// @todo : rendering.
 	}
 
 	/**
