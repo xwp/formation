@@ -1,131 +1,77 @@
 // Get helper functions from global scope
 const {
-	Dashicon,
-	IconButton,
-	PanelBody,
-	RangeControl,
-	SVG,
-	ToggleControl,
-	TextControl,
-	SelectControl,
-	withFilters
+    withFilters
 } = wp.components;
 
-const {InspectorControls} = wp.editor;
-const {Fragment} = wp.element;
+const { InspectorControls } = wp.editor;
+const { Fragment } = wp.element;
 
-const {__} = window.wp.i18n;
+const { __ } = window.wp.i18n;
 
 import FieldSettings from '../controls/field-settings';
 import FieldExtensions from '../controls/field-extension';
+import { TextInput as FieldInput } from '../inputs';
 
-const FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( FieldSettings );
-const FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( FieldExtensions );
+const TextInput = ( override ) => {
+    let FieldInputWithFilters = withFilters( 'formation.fieldInput' )( FieldInput );
+    let FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( FieldSettings );
+    let FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( FieldExtensions );
+    if ( override ) {
+        if ( override.fieldInput ) {
+            FieldInputWithFilters = withFilters( 'formation.fieldInput' )( override.FieldInput );
+        }
+        if ( override.fieldSettings ) {
+            FieldSettingsWithFilters = withFilters( 'formation.fieldSettings' )( override.FieldSettings );
+        }
+        if ( override.fieldExtensions ) {
+            FieldExtensionsWithFilters = withFilters( 'formation.fieldExtensions' )( override.FieldInput );
+        }
+    }
 
-const TextInput = () => {
-	return {
-		title: __( 'Text Input' ),
-		category: 'fields',
-		icon: 'forms',
-		keywords: [
-			__( 'Field' ),
-			__( 'Form' ),
-			__( 'Text' )
-		],
-		attributes: {
-			label: {
-				type: 'string',
-				source: 'text',
-				selector: 'label',
-				default: __( 'New Field' )
-			},
-			slug: {
-				type: 'string',
-				source: 'attribute',
-				selector: 'input',
-				attribute: 'id',
-			},
-			placeholder: {
-				type: 'string',
-				source: 'attribute',
-				selector: 'input',
-				attribute: 'placeholder',
-			},
-			description: {
-				type: 'string',
-				source: 'html',
-				selector: '.description',
-			},
-			required: {
-				type: 'bool',
-			},
+    return {
+        title: __( 'Text Input' ),
+        category: 'fields',
+        icon: 'forms',
+        keywords: [
+            __( 'Field' ),
+            __( 'Form' ),
+            __( 'Text' )
+        ],
+        attributes: {
+            label: {
+                type: 'string',
+                default: __( 'New Field' )
+            },
+            slug: {
+                type: 'string',
+            },
+            placeholder: {
+                type: 'string',
+            },
+            description: {
+                type: 'string',
+            },
+            required: {
+                type: 'bool',
+            },
 
-		},
-		edit: props => {
-			const {
-				label,
-				slug,
-				placeholder,
-				description,
-				required,
-			} = props.attributes;
-			return (
-				<Fragment>
-					<InspectorControls>
-						<FieldSettingsWithFilters {...props}/>
-						<FieldExtensionsWithFilters {...props} />
-					</InspectorControls>
-					<div className={props.className}>
-						<label for={slug}>
-							{label}
-							{required &&
-							<span className={'required'}>*</span>
-							}
-						</label>
-						<input
-							type={'text'}
-							required={required}
-							placeholder={placeholder}
-							disabled={'disabled'}
-						/>
-						{description &&
-						<div className={'description'}>{description}</div>
-						}
-					</div>
-				</Fragment>
+        },
+        edit: props => {
 
-			);
-		},
-		save: props => {
-			const {
-				label,
-				slug,
-				placeholder,
-				description,
-				required,
-			} = props.attributes;
-			return (
-				<div className={props.className}>
-					<label for={slug}>
-						{label}
-						{required &&
-						<span className={'required'}>*</span>
-						}
-					</label>
+            return (
+                <Fragment>
+                    <InspectorControls>
+                        <FieldSettingsWithFilters { ...props }/>
+                        <FieldExtensionsWithFilters { ...props } />
+                    </InspectorControls>
 
-					<input
-						type={'text'}
-						required={required}
-						placeholder={placeholder}
-						id={slug}
-						name={slug}
-					/>
-					{description &&
-					<div className={'description'}>{description}</div>
-					}
-				</div>
-			);
-		},
-	};
+                    <div className={ props.className }>
+                        <FieldInputWithFilters { ...props } />
+                    </div>
+                </Fragment>
+            );
+        },
+        save: () => { return null; },
+    };
 };
 export default TextInput;

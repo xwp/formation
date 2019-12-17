@@ -56,6 +56,18 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	public function setup() {
 		add_filter( 'allowed_block_types', array( $this, 'block_types' ), 10, 2 );
 		add_filter( 'block_categories', array( $this, 'block_category' ), 10, 2 );
+		add_shortcode( 'formation', array( $this, 'render_front_form' ) );
+	}
+
+	/**
+	 * @param $args
+	 */
+	public function render_front_form( $args ) {
+		$post = get_post( $args['form'] );
+
+		$content = parse_blocks( $post->post_content );
+		var_dump( $content );
+
 	}
 
 	/**
@@ -156,8 +168,8 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			'can_export'          => true,
 			'has_archive'         => false,
 			'exclude_from_search' => true,
-			'publicly_queryable'  => true,
-			'rewrite'             => true,
+			'publicly_queryable'  => false,
+			'rewrite'             => false,
 			'capability_type'     => 'page',
 			'show_in_rest'        => true,
 			'rest_base'           => self::$slug,
@@ -172,9 +184,16 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	public function register_assets() {
 
 		wp_register_script(
+			'formation-blocks-js',
+			$this->plugin->asset_url( 'js/dist/blocks.js' ),
+			null,
+			$this->plugin->asset_version(),
+			false
+		);
+		wp_register_script(
 			'formation-editor-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
-			null,
+			array( 'wp-blocks', 'wp-element', 'wp-data' ),
 			$this->plugin->asset_version(),
 			false
 		);
@@ -201,6 +220,28 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			wp_enqueue_script( 'formation-editor-js' );
 			wp_enqueue_style( 'formation-editor-css' );
 		}
+		wp_enqueue_script( 'formation-blocks-js' );
+		$this->load_form_data();
+	}
+
+	private function load_form_data() {
+
+		$data  = array(
+			array(
+				'label' => null,
+				'value' => null,
+			),
+		);
+		$forms = get_posts( array( 'post_type' => self::$slug, 'numberposts' => - 1 ) );
+		foreach ( $forms as $form ) {
+			$data[] = array(
+				'label' => $form->post_title,
+				'value' => $form->ID,
+			);
+		}
+
+		$script = 'var Formation = ' . wp_json_encode( $data );
+		wp_add_inline_script( 'formation-blocks-js', $script );
 	}
 
 	/**

@@ -13,7 +13,7 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		editor: './js/src/editor.js',
-		style: './js/src/style.scss',
+		blocks: './js/src/blocks.js',
 	},
 	output: {
 		path: path.resolve( __dirname, 'js/dist' ),
