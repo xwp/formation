@@ -3,7 +3,10 @@
  */
 
 
-const TextareaInput = ( props ) => {
+const InputField = ( props ) => {
+    if ( props.name !== 'formation/text-area' ) {
+        return null;
+    }
     const {
         label,
         slug,
@@ -24,12 +27,26 @@ const TextareaInput = ( props ) => {
                 required={ required }
                 placeholder={ placeholder }
                 disabled={ 'disabled' }
-                rows={rows}
-            ></textarea>
+                rows={ rows }
+            />
             { description &&
             <div className={ 'description' }>{ description }</div>
             }
         </>
     );
 };
-export default TextareaInput;
+
+// Define in field type for Text Area.
+const FormationTextAreaInput = ( FormationFieldInput ) => {
+    return ( props ) => {
+        return ( <>
+                <FormationFieldInput { ...props } />
+                { props.name === 'formation/text-area' &&
+                <InputField { ...props } />
+                }
+            </>
+        );
+    };
+};
+
+export default FormationTextAreaInput;

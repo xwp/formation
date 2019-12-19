@@ -1,15 +1,11 @@
 /**
- * Editor Blocks importer.
+ * Form Editor field (Blocks) importer and register.
  *
  * @package Formation
  */
-const {registerBlockType} = window.wp.blocks;
-import TextInput from './blocks/text-input';
-import TextArea from './blocks/textarea';
-import FormEmbed from './blocks/form-embed';
+
+import { registerFields } from './fields';
 
 import './editor.scss';
 
-// Register blocks.
-registerBlockType( 'formation/text-input', TextInput() );
-registerBlockType( 'formation/text-area', TextArea() );
+registerFields();

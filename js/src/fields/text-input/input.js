@@ -2,8 +2,8 @@
  * Formation field edit.
  */
 
-
-const TextInput = ( props ) => {
+// Define the input field edit component.
+const InputField = ( props ) => {
     const {
         label,
         slug,
@@ -31,4 +31,18 @@ const TextInput = ( props ) => {
         </>
     );
 };
-export default TextInput;
+
+// Add the component on text inputs only.
+const FormationTextInput = ( FormationFieldInput ) => {
+    return ( props ) => {
+        return ( <>
+                <FormationFieldInput { ...props } />
+                { props.name === 'formation/text-input' &&
+                <InputField { ...props } />
+                }
+            </>
+        );
+    };
+};
+
+export default FormationTextInput;

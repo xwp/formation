@@ -23,6 +23,18 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	private $plugin;
 
 	/**
+	 * Holds list of assets.
+	 *
+	 * @var array
+	 */
+	private $assets = array(
+		'blocks',
+		'editor',
+		'components',
+		'public',
+	);
+
+	/**
 	 * The post type slug.
 	 *
 	 * @var string
@@ -56,18 +68,30 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	public function setup() {
 		add_filter( 'allowed_block_types', array( $this, 'block_types' ), 10, 2 );
 		add_filter( 'block_categories', array( $this, 'block_category' ), 10, 2 );
-		add_shortcode( 'formation', array( $this, 'render_front_form' ) );
+		register_block_type(
+			'formation/form-embed',
+			array(
+				'render_callback' => array( $this, 'render_form' ),
+			)
+		);
 	}
 
 	/**
-	 * Render a form on the front end.
+	 * Render a form block.
 	 *
-	 * @param array $args Args in shortcode.
+	 * @param array  $atts    The attributes for the block.
+	 * @param string $content The rendered content.
+	 *
+	 * @return string
 	 */
-	public function render_front_form( $args ) {
-		$post    = get_post( $args['form'] );
-		$content = do_blocks( $post->post_content );
-		// @todo : rendering.
+	public function render_form( $atts, $content ) {
+
+		if ( ! empty( $atts['form_id'] ) ) {
+			$form    = get_post( $atts['form_id'] );
+			$content = do_blocks( $form->post_content );
+		}
+
+		return $content;
 	}
 
 	/**
@@ -155,7 +179,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			'label'               => __( 'Form', 'formation' ),
 			'description'         => __( 'Formation form', 'formation' ),
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', 'revisions', 'page-attributes' ),
+			'supports'            => array( 'title', 'editor', 'revisions', 'page-attributes', 'custom-fields' ),
 			'taxonomies'          => array( 'category' ),
 			'hierarchical'        => false,
 			'public'              => true,
@@ -168,8 +192,8 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			'can_export'          => true,
 			'has_archive'         => false,
 			'exclude_from_search' => true,
-			'publicly_queryable'  => false,
-			'rewrite'             => false,
+			'publicly_queryable'  => true,
+			'rewrite'             => true,
 			'capability_type'     => 'page',
 			'show_in_rest'        => true,
 			'rest_base'           => self::$slug,
@@ -183,26 +207,29 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 */
 	public function register_assets() {
 
-		wp_register_script(
-			'formation-blocks-js',
-			$this->plugin->asset_url( 'js/dist/blocks.js' ),
-			null,
-			$this->plugin->asset_version(),
-			false
-		);
-		wp_register_script(
-			'formation-editor-js',
-			$this->plugin->asset_url( 'js/dist/editor.js' ),
-			array( 'wp-blocks', 'wp-element', 'wp-data' ),
-			$this->plugin->asset_version(),
-			false
-		);
-		wp_register_style(
-			'formation-editor-css',
-			$this->plugin->asset_url( 'css/editor.css' ),
-			null,
-			$this->plugin->asset_version()
-		);
+		foreach ( $this->assets as $asset ) {
+			$js_path  = $this->plugin->dir() . '/js/dist/' . $asset . '.asset.php';
+			$css_path = $this->plugin->dir() . '/css/' . $asset . '.css';
+			if ( file_exists( $js_path ) ) {
+				$assets_dep = require_once $js_path;
+				wp_register_script(
+					'formation-' . $asset . '-js',
+					$this->plugin->asset_url( 'js/dist/' . $asset . '.js' ),
+					$assets_dep['dependencies'],
+					$assets_dep['version'],
+					false
+				);
+
+				if ( file_exists( $css_path ) ) {
+					wp_register_style(
+						'formation-' . $asset . '-css',
+						$this->plugin->asset_url( 'css/' . $asset . '.css' ),
+						null,
+						$assets_dep['version']
+					);
+				}
+			}
+		}
 	}
 
 
@@ -210,12 +237,15 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * Enqueue Assets.
 	 */
 	public function enqueue_assets() {
+		wp_enqueue_script( 'formation-public-js' );
 	}
 
 	/**
 	 * Enqueue Assets.
 	 */
 	public function enqueue_editor_assets() {
+		wp_enqueue_script( 'formation-components-js' );
+
 		if ( $this->is_active() ) {
 			wp_enqueue_script( 'formation-editor-js' );
 			wp_enqueue_style( 'formation-editor-css' );
@@ -224,6 +254,9 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		$this->load_form_data();
 	}
 
+	/**
+	 * Load forms data.
+	 */
 	private function load_form_data() {
 
 		$data  = array(
@@ -232,7 +265,12 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 				'value' => null,
 			),
 		);
-		$forms = get_posts( array( 'post_type' => self::$slug, 'numberposts' => - 1 ) );
+		$forms = get_posts(
+			array(
+				'post_type'   => self::$slug,
+				'numberposts' => - 1,
+			)
+		);
 		foreach ( $forms as $form ) {
 			$data[] = array(
 				'label' => $form->post_title,
@@ -241,7 +279,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		}
 
 		$script = 'var Formation = ' . wp_json_encode( $data );
-		wp_add_inline_script( 'formation-blocks-js', $script );
+		wp_add_inline_script( 'formation-editor-js', $script );
 	}
 
 	/**

@@ -49,27 +49,24 @@ const FormEmbed = () => {
                             value={ form_id }
                             options={ Formation }
                             onChange={ ( value ) => props.setAttributes( {
-                                form_id: value,
+                                form_id: parseInt( value ),
                             } ) }
                         />
                         </PanelBody>
                     </InspectorControls>
                     <div className={props.className}>
-                        {form_id}
+                        { form_id &&
+                        <span>Form Embedded : {form_id}</span>
+                        }
+                        { ! form_id &&
+                        <span>Select a Form to embed: {form_id}</span>
+                        }
                     </div>
                 </Fragment>
             );
         },
-        save: props => {
-            const {
-                show_title,
-                form_id
-            } = props.attributes;
-            return (
-                <div className={ props.className }>
-                    [formation form="{ form_id }" title="{ show_title ? '1' : '0' }"]
-                </div>
-            );
+        save: () => {
+            return null;
         },
     };
 };

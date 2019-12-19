@@ -1,9 +1,9 @@
 /**
- * Editor Blocks importer.
+ * Editor Embed Blocks importer.
  *
  * @package Formation
  */
-const {registerBlockType} = window.wp.blocks;
+const {registerBlockType} = wp.blocks;
 
 import FormEmbed from './blocks/form-embed';
 

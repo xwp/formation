@@ -31,9 +31,16 @@ class View implements Setup {
 		$this->plugin = $plugin;
 	}
 
+	public function render_field( $args, $content ){
+
+		return $content;
+	}
 	/**
 	 * Setup the object.
 	 */
 	public function setup() {
+		register_block_type( 'formation/text-input', array(
+			'render_callback' => array( $this, 'render_field' ),
+		) );
 	}
 }
