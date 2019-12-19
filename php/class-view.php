@@ -39,8 +39,10 @@ class View implements Setup {
 	 * Setup the object.
 	 */
 	public function setup() {
-		register_block_type( 'formation/text-input', array(
-			'render_callback' => array( $this, 'render_field' ),
-		) );
+
+	}
+
+	public function start_form(){
+
 	}
 }

@@ -67,8 +67,8 @@ class Plugin {
 	 */
 	public function register_hooks() {
 		add_action( 'plugins_loaded', array( $this, 'init' ), 9 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ), 11 );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ), 20 );
 		add_action( 'init', array( $this, 'setup' ), 10 );
 		add_action( 'init', array( $this, 'register_assets' ), 10 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
