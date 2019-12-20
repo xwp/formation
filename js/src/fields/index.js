@@ -11,12 +11,14 @@ import {
 // Import fields.
 import * as textinput from './text-input';
 import * as textarea from './textarea';
+import * as email from './email';
 
 // Register fields as blocks.
 export const registerFields = () => {
     [
         textinput,
-        textarea
+        textarea,
+        email,
 
     ].forEach( ( block ) => {
         if ( !block ) {

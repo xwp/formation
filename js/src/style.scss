@@ -5,3 +5,23 @@
  */
 @import 'variables';
 
+
+.formation{
+	&-field {
+		display: block;
+		padding: 1.2em;
+		margin : 1em;
+
+		label {
+			display : block;
+		}
+
+		input[type=text], textarea {
+			width : 100%;
+		}
+
+		.description {
+			font-size:0.8em;
+		}
+	}
+}

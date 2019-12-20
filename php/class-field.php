@@ -51,12 +51,10 @@ class Field implements Component\Pre_Setup, Component\Setup {
 	 */
 	public function get_fields() {
 		$fields = array(
-			'formation/text-input' => array(
-				'init' => '\Formation\Component\Field\Text_Input',
-			),
-			'formation/text-area'  => array(
-				'init' => '\Formation\Component\Field\TextArea',
-			),
+			'formation/text-input' => '\Formation\Component\Field\Text_Input',
+			'formation/text-area'  => '\Formation\Component\Field\TextArea',
+			'formation/button'     => '\Formation\Component\Field\Button',
+			'formation/email'      => '\Formation\Component\Field\Email',
 		);
 
 		return $fields;
@@ -74,6 +72,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 				)
 			);
 		}
+		add_filter( 'render_block_data', array( $this, 'register_field_instance' ) );
 	}
 
 	/**
@@ -89,16 +88,33 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			$blocks = parse_blocks( $form->post_content );
 			if ( ! empty( $blocks ) ) {
 				foreach ( $blocks as $block ) {
-					if ( isset( $this->fields[ $block['blockName'] ] ) && isset( $this->fields[ $block['blockName'] ]['init'] ) ) {
-						$init = $this->get_field_init( $this->fields[ $block['blockName'] ]['init'] );
-						if ( $init ) {
-							$field                                              = new $init( $block['attrs'] );
-							$this->instances[ $field->get_arg( '_unique_id' ) ] = $field;
-						}
-					}
+					$this->register_field_instance( $block );
 				}
 			}
 		}
+	}
+
+	/**
+	 * Setup the object.
+	 */
+	public function register_field_instance( $block ) {
+		if ( isset( $this->fields[ $block['blockName'] ] ) ) {
+			// Check the field has not already been registered.
+			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
+				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
+				if ( $init ) {
+					$field = new $init( $block['attrs'] );
+					$value = filter_input( INPUT_POST, $field->get_arg( 'slug' ), FILTER_DEFAULT );
+					if ( ! is_null( $value ) ) {
+						$field->set_value( $value );
+					}
+					$this->instances[ $field->get_arg( '_unique_id' ) ] = $field;
+					$block['formationField']                            = $field;
+				}
+			}
+		}
+
+		return $block;
 	}
 
 	/**

@@ -36,7 +36,7 @@ abstract class FieldAbstract {
 	 *
 	 * @var bool
 	 */
-	private $valid = false;
+	private $valid = true;
 
 	/**
 	 * Holds user feeadback notices.
@@ -59,13 +59,14 @@ abstract class FieldAbstract {
 	 */
 	public function __construct( $args ) {
 		$default_attributes = array(
-			'type'        => $this->type,
-			'label'       => null,
-			'slug'        => null,
-			'placeholder' => null,
-			'value'       => null,
-			'description' => null,
-			'required'    => false,
+			'type'          => $this->type,
+			'label'         => null,
+			'slug'          => null,
+			'placeholder'   => null,
+			'value'         => null,
+			'description'   => null,
+			'required'      => false,
+			'required_text' => '*',
 		);
 
 		$args = wp_parse_args( $args, $default_attributes );
@@ -132,7 +133,7 @@ abstract class FieldAbstract {
 		$attribute_string        = $this->build_attribute_string( $attributes, 'field_wrapper' );
 		$html['opening_wrapper'] = sprintf( '<div %s>', $attribute_string );
 		$html['label']           = $this->render_label();
-		$html['required']        = $this->render_label();
+		$html['required']        = $this->render_required();
 		$html['input']           = $this->render_input();
 		$html['description']     = $this->render_description();
 		$html['notice']          = $this->render_notice();
@@ -161,10 +162,9 @@ abstract class FieldAbstract {
 		$value          = apply_filters( 'formation_field_set_value', $value, $this );
 		$value          = apply_filters( 'formation_field_set_value_' . $this->type, $value, $this );
 		$value          = apply_filters( 'formation_field_set_value_' . $this->type . '_' . $this->args['slug'], $value, $this );
-		$proposed_value = $this->sanitize_value( $value );
-		$proposed_value = $this->validate_value( $proposed_value );
+		$proposed_value = $this->validate_value( $value );
 		if ( is_wp_error( $proposed_value ) ) {
-			$this->args['value'] = $value->get_error_message(); // Set to the error since it may be from the filters.
+			$this->args['value'] = $proposed_value->get_error_message(); // Set to the error since it may be from the filters.
 		} else {
 			/**
 			 * Set to the proposed value regardless of validation to allow the user to change or replace the value.
@@ -185,6 +185,15 @@ abstract class FieldAbstract {
 	}
 
 	/**
+	 * Is field Valid.
+	 *
+	 * @return mixed
+	 */
+	public function is_valid() {
+		return $this->valid;
+	}
+
+	/**
 	 * Validates a value.
 	 *
 	 * @param \WP_Error|mixed $value The value to validate.
@@ -196,12 +205,15 @@ abstract class FieldAbstract {
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
 		}
+		// Sanitize value.
+		$proposed_value = $this->sanitize_value( $value );
 		// Check if we got an error.
-		if ( is_wp_error( $value ) ) {
-			$this->set_notice( $value->get_error_code() );
+		if ( is_wp_error( $proposed_value ) ) {
+			$this->set_notice( $proposed_value->get_error_code() );
+			$this->valid = false;
 		}
 
-		return $value;
+		return $proposed_value;
 	}
 
 	/**
@@ -209,10 +221,13 @@ abstract class FieldAbstract {
 	 *
 	 * @param mixed $value The value to sanitize.
 	 *
-	 * @return mixed
+	 * @return mixed|\WP_Error
 	 */
-	private function sanitize_value( $value ) {
-		return sanitize_text_field( $value );
+	public function sanitize_value( $value ) {
+
+		$value = sanitize_text_field( $value );
+
+		return $value;
 	}
 
 	/**
@@ -265,7 +280,7 @@ abstract class FieldAbstract {
 			'name'        => $this->args['slug'],
 			'id'          => $this->args['slug'],
 			'placeholder' => $this->args['placeholder'],
-			'required'    => $this->args['required'] ? '*' : null,
+			'required'    => $this->args['required'],
 			'value'       => $this->args['value'],
 		);
 
@@ -279,7 +294,10 @@ abstract class FieldAbstract {
 	 */
 	public function get_label_attributes() {
 		return array(
-			'for' => $this->args['slug'],
+			'for'   => $this->args['slug'],
+			'class' => array(
+				'formation-field-label',
+			),
 		);
 	}
 
@@ -364,7 +382,7 @@ abstract class FieldAbstract {
 		if ( ! empty( $this->args['required'] ) ) {
 			$attributes       = $this->get_required_attributes();
 			$attribute_string = $this->build_attribute_string( $attributes, 'required' );
-			$html             = sprintf( '<span %s>%s</span>', $attribute_string, esc_html( $this->args['required'] ) );
+			$html             = sprintf( '<span %s>%s</span>', $attribute_string, esc_html( $this->args['required_text'] ) );
 		}
 
 		return $html;
@@ -410,8 +428,8 @@ abstract class FieldAbstract {
 	public function render_notice() {
 
 		$html = null;
-		if ( ! empty( $this->args['notice'] ) ) {
-			foreach ( $this->args['notice'] as $notice ) {
+		if ( ! empty( $this->notices ) ) {
+			foreach ( $this->notices as $notice ) {
 				$default_notice   = array(
 					'type'    => 'success',
 					'message' => __( 'Success', 'formation' ),

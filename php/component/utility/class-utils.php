@@ -26,7 +26,7 @@ class Utils {
 		// setup attributes.
 		$attributes = [];
 		foreach ( $attributes_array as $att => $value ) {
-			if ( is_bool( $value ) ) {
+			if ( is_bool( $value ) || is_null( $value ) ) {
 				if ( true === $value ) {
 					$value = $att; // make value repeated i.e required="required".
 				} else {

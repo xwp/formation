@@ -70,6 +70,7 @@ class Plugin {
 	public function register_hooks() {
 		add_action( 'plugins_loaded', array( $this, 'init' ), 9 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'wp', array( $this, 'enqueue_front_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ), 20 );
 		add_action( 'init', array( $this, 'setup' ), 10 );
 		add_action( 'init', array( $this, 'register_assets' ), 10 );
@@ -223,7 +224,26 @@ class Plugin {
 			$components
 		);
 	}
+	/**
+	 * Enqueue scripts.
+	 */
+	public function enqueue_front_assets() {
+		// Enqueue Public.
+		$components = $this->get_components( Assets::class );
 
+		// Enqueue components.
+		array_map(
+			function ( $component ) {
+				/**
+				 * Component that implements Component\Assets.
+				 *
+				 * @var  Component\Assets $component
+				 */
+				$component->enqueue_front_assets();
+			},
+			$components
+		);
+	}
 	/**
 	 * Enqueue editor assets.
 	 */

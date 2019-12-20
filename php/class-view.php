@@ -44,10 +44,7 @@ class View implements Setup {
 	 * Setup the object.
 	 */
 	public function setup() {
-		// Add filter if we have the form class.
-		if ( ! empty( $this->plugin->components['form'] ) ) {
-			add_filter( 'the_content', array( $this, 'wrap_form' ), 1000 );
-		}
+		add_filter( 'the_content', array( $this, 'wrap_form' ), 1000 );
 	}
 
 	/**

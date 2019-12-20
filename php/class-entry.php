@@ -23,6 +23,13 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	private $plugin;
 
 	/**
+	 * The post type slug.
+	 *
+	 * @var string
+	 */
+	public static $slug = 'formation_entry';
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @param object $plugin Instance of the plugin.
@@ -82,18 +89,23 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'publicly_queryable'  => false,
 			'capability_type'     => 'page',
 			'show_in_rest'        => true,
-			'rest_base'           => 'formation_entry',
+			'rest_base'           => self::$slug,
 		);
 
-		return array( 'formation_entry' => $args );
+		return array( self::$slug => $args );
 	}
 
 	/**
 	 * Setup the object.
 	 */
 	public function post_setup() {
-		if ( $this->is_submitting() ) {
+		if ( $form = $this->is_submitting() ) {
 			$submission = $this->get_submission();
+			if ( is_array( $submission ) && empty( $submission['invalids'] ) ) {
+				$this->capture_entry( $submission );
+			} else {
+				// @todo: output general error.
+			}
 		}
 	}
 
@@ -118,8 +130,57 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	 */
 	public function get_submission() {
 		$field_instances = $this->plugin->components['field']->instances;
+		$form_id         = filter_input( INPUT_POST, $this->plugin->components['view']::FORM_ID_KEY, FILTER_SANITIZE_NUMBER_INT );
+		$referer         = filter_input( INPUT_POST, '_wp_http_referer', FILTER_DEFAULT );
+		$form            = get_post( $form_id );
+		if ( ! $form instanceof \WP_Post ) {
+			return false;
+		}
+		$entry = array(
+			'post'     => array(),
+			'data'     => array(),
+			'invalids' => array(),
+			'referer'  => $referer,
+		);
 		foreach ( $field_instances as $instance ) {
+			$slug                   = $instance->get_arg( 'slug' );
+			$entry['data'][ $slug ] = $instance->get_value();
+			if ( ! $instance->is_valid() ) {
+				$entry['invalids'][] = $slug;
+			}
+		}
 
+		$entry['post'] = array(
+			'post_title'   => 'entry',
+			'post_content' => wp_json_encode( $entry['data'] ),
+			'post_parent'  => $form_id,
+			'post_type'    => 'formation_entry',
+			'post_status'  => 'publish',
+		);
+
+
+		return $entry;
+	}
+
+	/**
+	 * Capture a submission.
+	 *
+	 * @param array $submission The submission data to save.
+	 */
+	public function capture_entry( $submission ) {
+		$entry_id = wp_insert_post( $submission['post'] );
+		if ( $entry_id ) {
+			wp_update_post(
+				array(
+					'ID'         => $entry_id,
+					'post_title' => __( 'Entry' ) . ' ' . $entry_id,
+				)
+			);
+			update_post_meta( $entry_id, 'entry_data', $submission['data'] );
+
+			// Redirect to form.
+			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $submission['referer'] );
+			wp_safe_redirect( $redirect );
 		}
 	}
 }

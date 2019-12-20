@@ -106,14 +106,15 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 
 		if ( self::$slug === $post->post_type ) {
 			// @todo Decide which block we'll allow (if not all) and add our form element blocks.
-			return array(
+			$fields  = $this->plugin->components['field']->get_fields();
+			$types   = array_keys( $fields );
+			$allowed = array(
 				'core/image',
 				'core/paragraph',
 				'core/heading',
 				'core/list',
-				'formation/text-input',
-				'formation/text-area',
 			);
+			$blocks  = array_merge( $types, $allowed );
 		}
 
 		return $blocks;
@@ -237,7 +238,15 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * Enqueue Assets.
 	 */
 	public function enqueue_assets() {
-		wp_enqueue_script( 'formation-public-js' );
+
+	}
+
+
+	/**
+	 * Enqueue Assets.
+	 */
+	public function enqueue_front_assets() {
+		wp_enqueue_style( 'formation-public-css' );
 	}
 
 	/**
