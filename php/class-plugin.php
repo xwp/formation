@@ -10,7 +10,9 @@ namespace Formation;
 use Formation\Component\Assets;
 use Formation\Component\Config;
 use Formation\Component\Notice;
+use Formation\Component\Post_Setup;
 use Formation\Component\Post_Types;
+use Formation\Component\Pre_Setup;
 use Formation\Component\Setup;
 
 /**
@@ -99,9 +101,55 @@ class Plugin {
 	 *
 	 * @since  0.1
 	 */
+	public function pre_setup() {
+		$this->post_types();
+		$components = $this->get_components( Pre_Setup::class );
+		// Do pre setups.
+		array_map(
+			function ( $component ) {
+				/**
+				 * Component that implements Component\Setup.
+				 *
+				 * @var  Component\Setup $component
+				 */
+				$component->pre_setup();
+			},
+			$components
+		);
+	}
+
+
+	/**
+	 * Setup hooks
+	 *
+	 * @since  0.1
+	 */
+	public function post_setup() {
+		$components = $this->get_components( Post_Setup::class );
+		// Run post setups, to enble setups that require registration of all components.
+		array_map(
+			function ( $component ) {
+				/**
+				 * Component that implements Component\Setup.
+				 *
+				 * @var  Component\Setup $component
+				 */
+				$component->post_setup();
+			},
+			$components
+		);
+	}
+
+	/**
+	 * Setup hooks
+	 *
+	 * @since  0.1
+	 */
 	public function setup() {
 		$this->post_types();
+		$this->pre_setup();
 		$components = $this->get_components( Setup::class );
+		// Do setups.
 		array_map(
 			function ( $component ) {
 				/**
@@ -113,6 +161,7 @@ class Plugin {
 			},
 			$components
 		);
+		$this->post_setup();
 	}
 
 	/**

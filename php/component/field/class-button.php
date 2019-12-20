@@ -10,21 +10,19 @@ namespace Formation\Component\Field;
 use Formation;
 
 /**
- * Class TextArea
+ * Class Button
  */
-class TextArea extends FieldAbstract {
+class Button extends FieldAbstract {
 
 	/**
 	 * The field type.
 	 *
 	 * @var string
 	 */
-	public $type = 'textarea';
+	public $type = 'button';
 
 	/**
 	 * Get the attributes for this fields input tag.
-	 *
-	 * @param array $args Field arguments.
 	 *
 	 * @return array
 	 */
@@ -41,7 +39,7 @@ class TextArea extends FieldAbstract {
 	 * @return string
 	 */
 	public function get_input_template() {
-		return '<textarea %s>%s</textarea>';
+		return '<button %s>%s</button>';
 	}
 
 }

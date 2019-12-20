@@ -12,13 +12,13 @@ use Formation;
 /**
  * Class Text_Input
  */
-class Text_Input extends FieldAbstract {
+class Hidden extends FieldAbstract {
 
 	/**
 	 * The field type.
 	 *
 	 * @var string
 	 */
-	public $type = 'text';
+	public $type = 'hidden';
 
 }

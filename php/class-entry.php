@@ -12,7 +12,7 @@ use Formation\Component;
 /**
  * Handles Formation's admin settings.
  */
-class Entry implements Component\Post_Types {
+class Entry implements Component\Post_Types, Component\Post_Setup {
 
 	/**
 	 * Holds the plugin instance.
@@ -88,4 +88,38 @@ class Entry implements Component\Post_Types {
 		return array( 'formation_entry' => $args );
 	}
 
+	/**
+	 * Setup the object.
+	 */
+	public function post_setup() {
+		if ( $this->is_submitting() ) {
+			$submission = $this->get_submission();
+		}
+	}
+
+	/**
+	 * Check if the form is in a submission.
+	 *
+	 * @return bool
+	 */
+	public function is_submitting() {
+		$submitting = false;
+
+		$nonce = filter_input( INPUT_POST, 'formation_nonce', FILTER_SANITIZE_STRING );
+		if ( ! empty( $nonce ) && wp_verify_nonce( $nonce, 'formation_frontend_submission' ) ) {
+			$submitting = true;
+		}
+
+		return $submitting;
+	}
+
+	/**
+	 * Get a current submission.
+	 */
+	public function get_submission() {
+		$field_instances = $this->plugin->components['field']->instances;
+		foreach ( $field_instances as $instance ) {
+
+		}
+	}
 }

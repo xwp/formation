@@ -39,6 +39,9 @@ const BaseInput = {
         required: {
             type: 'bool',
         },
+        _unique_id: {
+            type: 'string',
+        }
     },
     edit: ( props ) => {
         const {
@@ -46,7 +49,8 @@ const BaseInput = {
             slug,
             placeholder,
             description,
-            required
+            required,
+            _unique_id
         } = props.attributes;
 
         const toggleAttribute = ( attribute ) => {
@@ -54,6 +58,7 @@ const BaseInput = {
                 props.setAttributes( { [ attribute ]: newValue } );
             };
         };
+        props.setAttributes( { _unique_id: props.clientId } );
 
         return (
             <Fragment>
