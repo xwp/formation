@@ -87,8 +87,12 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	public function render_form( $atts, $content ) {
 
 		if ( ! empty( $atts['form_id'] ) ) {
-			$form    = get_post( $atts['form_id'] );
-			$content = do_blocks( $form->post_content );
+			$form = get_post( $atts['form_id'] );
+			if ( $atts['show_title'] ) {
+				$content .= '<h3>' . $form->post_title . '</h3>';
+			}
+			$content .= $form->post_content;
+			$content = $this->plugin->components['view']->wrap_form( do_blocks( $content ), $form );
 		}
 
 		return $content;
@@ -109,6 +113,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			$fields  = $this->plugin->components['field']->get_fields();
 			$types   = array_keys( $fields );
 			$allowed = array(
+				'core/columns',
 				'core/image',
 				'core/paragraph',
 				'core/heading',
@@ -288,7 +293,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		}
 
 		$script = 'var Formation = ' . wp_json_encode( $data );
-		wp_add_inline_script( 'formation-editor-js', $script );
+		wp_add_inline_script( 'formation-blocks-js', $script );
 	}
 
 	/**

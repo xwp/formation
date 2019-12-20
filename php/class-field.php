@@ -87,9 +87,18 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			}
 			$blocks = parse_blocks( $form->post_content );
 			if ( ! empty( $blocks ) ) {
-				foreach ( $blocks as $block ) {
-					$this->register_field_instance( $block );
-				}
+				$this->find_field_blocks( $blocks );
+			}
+		}
+	}
+
+	private function find_field_blocks( $blocks ) {
+
+		foreach ( $blocks as $block ) {
+			$this->register_field_instance( $block );
+			// Process innerBlocks
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$this->find_field_blocks( $block['innerBlocks'] );
 			}
 		}
 	}
@@ -98,6 +107,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 	 * Setup the object.
 	 */
 	public function register_field_instance( $block ) {
+
 		if ( isset( $this->fields[ $block['blockName'] ] ) ) {
 			// Check the field has not already been registered.
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {

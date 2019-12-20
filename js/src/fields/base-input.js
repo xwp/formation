@@ -102,7 +102,7 @@ const BaseInput = {
                     <FormationFieldExtensions { ...props } />
                 </InspectorControls>
 
-                <div className={ props.className }>
+                <div className={ props.className + ' formation-editor-input' }>
                     <FormationFieldInput { ...props } />
                 </div>
             </Fragment>

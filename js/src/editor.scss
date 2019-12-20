@@ -6,20 +6,25 @@
  */
 
 .editor-styles-wrapper {
-	.wp-block-formation-text-input,
-	.wp-block-formation-text-area{
+	.formation-editor-input {
 
 		label {
 			display : block;
 		}
 
-		input[type=text], textarea {
+		input[type=email],
+		input[type=search],
+		input[type=tel],
+		input[type=text],
+		input[type=time],
+		input[type=url],
+		input[type=week],
+		textarea {
 			width : 100%;
 		}
 
 		.description {
-			font-size:0.8em;
+			font-size : 0.8em;
 		}
 	}
 }
-

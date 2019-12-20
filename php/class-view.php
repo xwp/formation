@@ -50,12 +50,15 @@ class View implements Setup {
 	/**
 	 * Wrap the form page in the correct form tags.
 	 *
-	 * @param string $content The form content.
+	 * @param string        $content The form content.
+	 * @param \WP_Post|null $post    The form post object.
 	 *
 	 * @return string
 	 */
-	public function wrap_form( $content ) {
-		$post = get_queried_object();
+	public function wrap_form( $content, $post = null ) {
+		if ( is_null( $post ) ) {
+			$post = get_queried_object();
+		}
 		if ( ! $post || $this->plugin->components['form']::$slug !== $post->post_type ) {
 			return $content;
 		}
