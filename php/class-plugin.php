@@ -91,7 +91,6 @@ class Plugin {
 			'Formation\\UI\\' => glob( __DIR__ . '/ui/class-*.php' ),
 		);
 
-		die( print_r( $component_sets));
 		foreach ( $component_sets as $ns => $components ) {
 			foreach ( $components as $component ) {
 				$component_name = strstr( str_replace( 'class-', '', basename( $component ) ), '.php', true );
