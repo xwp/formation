@@ -88,6 +88,7 @@ class Plugin {
 
 		$component_sets = array(
 			'Formation\\' => glob( __DIR__ . '/class-*.php' ),
+			'Formation\\UI\\' => glob( __DIR__ . '/ui/class-*.php' ),
 		);
 
 		foreach ( $component_sets as $ns => $components ) {
