@@ -22,7 +22,7 @@ abstract class FieldAbstract {
 	 * @since   0.1
 	 * @var     Plugin Instance of the global plugin.
 	 */
-	private $args;
+	public $args;
 
 	/**
 	 * The field type.
@@ -58,6 +58,32 @@ abstract class FieldAbstract {
 	 * @param array $args Field instance args.
 	 */
 	public function __construct( $args ) {
+		$default_attributes = $this->get_default_attributes();
+		$args               = wp_parse_args( $args, $default_attributes );
+		// Sanitize the slag/id.
+		if ( ! empty( $args['slug'] ) ) {
+			$args['slug'] = sanitize_key( $args['slug'] );
+		} else {
+			$args['slug'] = sanitize_key( $args['label'] );
+		}
+
+		$this->set_args( $args );
+		$this->notice_messages = $this->get_notice_messages();
+
+		if ( ! empty( $this->args['default'] ) ) {
+			$this->set_value( $this->args['default'] );
+		}
+
+		do_action( 'formation_field_init', $this );
+		do_action( 'formation_field_init_' . $this->type, $this );
+	}
+
+	/**
+	 * Get the default Attributes for theis field.
+	 *
+	 * @return array
+	 */
+	private function get_default_attributes() {
 		$default_attributes = array(
 			'type'          => $this->type,
 			'label'         => null,
@@ -67,17 +93,13 @@ abstract class FieldAbstract {
 			'description'   => null,
 			'required'      => false,
 			'required_text' => '*',
+			'default'       => null,
 		);
 
-		$args = wp_parse_args( $args, $default_attributes );
-		// Sanitize the slag/id.
-		if ( ! empty( $args['slug'] ) ) {
-			$args['slug'] = sanitize_key( $args['slug'] );
-		} else {
-			$args['slug'] = sanitize_key( $args['label'] );
-		}
-		$this->args            = $args;
-		$this->notice_messages = $this->get_notice_messages();
+		$default_attributes = apply_filters( 'formation_field_default_attributes', $default_attributes, $this );
+		$default_attributes = apply_filters( 'formation_field_default_attributes_' . $this->type, $default_attributes, $this );
+
+		return $default_attributes;
 	}
 
 	/**
@@ -251,7 +273,7 @@ abstract class FieldAbstract {
 	 *
 	 * @return mixed
 	 */
-	public function get_arg( $args ) {
+	public function get_args( $args ) {
 		$return = array();
 		foreach ( (array) $args as $arg ) {
 			$value = null;
@@ -266,6 +288,21 @@ abstract class FieldAbstract {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get and arg for the plugin.
+	 *
+	 * @param array $args The arg or array of args to get.
+	 *
+	 * @return mixed
+	 */
+	public function set_args( $args ) {
+		$args = apply_filters( 'formation_field_set_args', $args, $this );
+		$args = apply_filters( 'formation_field_set_args_' . $this->type, $args, $this );
+		foreach ( $args as $arg => $value ) {
+			$this->args[ $arg ] = $value;
+		}
 	}
 
 	/**
@@ -398,7 +435,7 @@ abstract class FieldAbstract {
 		$attributes       = $this->get_input_attributes();
 		$attribute_string = $this->build_attribute_string( $attributes, 'input' );
 		$input_template   = $this->get_input_template();
-		$html             = sprintf( $input_template, $attribute_string, $this->args['value'] );
+		$html             = sprintf( $input_template, $attribute_string, $this->get_value() );
 
 		return $html;
 	}
@@ -454,8 +491,8 @@ abstract class FieldAbstract {
 	 */
 	public function build_attribute_string( $attributes, $tag ) {
 
-		$attributes = apply_filters( 'formation_field_' . $tag . '_attributes_' . $this->type, $attributes, $this->args );
-		$attributes = apply_filters( 'formation_field_' . $tag . '_attributes', $attributes, $this->args );
+		$attributes = apply_filters( 'formation_field_' . $tag . '_attributes_' . $this->type, $attributes, $this );
+		$attributes = apply_filters( 'formation_field_' . $tag . '_attributes', $attributes, $this );
 
 		return Component\Utility\Utils::build_attributes( $attributes );
 	}

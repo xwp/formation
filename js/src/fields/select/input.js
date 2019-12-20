@@ -19,8 +19,7 @@ const InputField = ( props ) => {
                 <span className={ 'required' }>*</span>
                 }
             </label>
-            <input
-                type={ 'text' }
+            <select
                 required={ required }
                 placeholder={ placeholder }
                 disabled={ 'disabled' }
@@ -37,7 +36,7 @@ const FormationInput = ( FormationFieldInput ) => {
     return ( props ) => {
         return ( <>
                 <FormationFieldInput { ...props } />
-                { props.name === 'formation/email' &&
+                { props.name === 'formation/select' &&
                 <InputField { ...props } />
                 }
             </>

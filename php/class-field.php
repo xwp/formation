@@ -55,6 +55,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			'formation/text-area'  => '\Formation\Component\Field\TextArea',
 			'formation/button'     => '\Formation\Component\Field\Button',
 			'formation/email'      => '\Formation\Component\Field\Email',
+			'formation/select'     => '\Formation\Component\Field\Select',
 		);
 
 		return $fields;
@@ -96,7 +97,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 
 		foreach ( $blocks as $block ) {
 			$this->register_field_instance( $block );
-			// Process innerBlocks
+			// Process innerBlocks.
 			if ( ! empty( $block['innerBlocks'] ) ) {
 				$this->find_field_blocks( $block['innerBlocks'] );
 			}
@@ -114,12 +115,12 @@ class Field implements Component\Pre_Setup, Component\Setup {
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
 				if ( $init ) {
 					$field = new $init( $block['attrs'] );
-					$value = filter_input( INPUT_POST, $field->get_arg( 'slug' ), FILTER_DEFAULT );
+					$value = filter_input( INPUT_POST, $field->get_args( 'slug' ), FILTER_DEFAULT );
 					if ( ! is_null( $value ) ) {
 						$field->set_value( $value );
 					}
-					$this->instances[ $field->get_arg( '_unique_id' ) ] = $field;
-					$block['formationField']                            = $field;
+					$this->instances[ $field->get_args( '_unique_id' ) ] = $field;
+					$block['formationField']                             = $field;
 				}
 			}
 		}
