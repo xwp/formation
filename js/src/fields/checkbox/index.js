@@ -1,15 +1,15 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
 import FormationInput from './input';
-import FormationInputSelectSettings from './settings';
+import FormationInputSettings from './settings';
 
 wp.hooks.addFilter( 'FormationFieldInput', 'Formation', FormationInput );
-wp.hooks.addFilter( 'FormationFieldSettings', 'Formation', FormationInputSelectSettings );
+wp.hooks.addFilter( 'FormationFieldSettings', 'Formation', FormationInputSettings );
 
 const field = {
     ...BaseInput,
-    name: 'formation/select',
-    title: __( 'Select' ),
+    name: 'formation/checkbox',
+    title: __( 'Checkbox' ),
     category: 'fields',
     icon: 'forms',
     keywords: [

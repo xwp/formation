@@ -22,11 +22,11 @@ const InputSettings = ( props ) => {
 };
 
 // Define additional settings included in previous settings.
-const FormationInputSelectSettings = ( FormationFieldSettings ) => {
+const FormationInputCheckboxSettings = ( FormationFieldSettings ) => {
     return ( props ) => {
         return ( <>
                 <FormationFieldSettings { ...props } />
-                { props.name === 'formation/select' &&
+                { props.name === 'formation/checkbox' &&
                 <InputSettings { ...props } />
                 }
             </>
@@ -34,4 +34,4 @@ const FormationInputSelectSettings = ( FormationFieldSettings ) => {
     };
 };
 
-export default FormationInputSelectSettings;
+export default FormationInputCheckboxSettings;

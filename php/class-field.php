@@ -56,6 +56,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			'formation/button'     => '\Formation\Component\Field\Button',
 			'formation/email'      => '\Formation\Component\Field\Email',
 			'formation/select'     => '\Formation\Component\Field\Select',
+			'formation/checkbox'   => '\Formation\Component\Field\Checkbox',
 		);
 
 		return $fields;
