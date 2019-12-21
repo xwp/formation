@@ -44,7 +44,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	public function post_types() {
 		// Register Custom Post Type.
 		$labels = array(
-			'name'                  => _x( 'Entries', 'Post Type General Name', 'formation' ),
+			'name'                  => _x( 'Form Entries', 'Post Type General Name', 'formation' ),
 			'singular_name'         => _x( 'Entry', 'Post Type Singular Name', 'formation' ),
 			'menu_name'             => __( 'Entries', 'formation' ),
 			'name_admin_bar'        => __( 'Entry', 'formation' ),
@@ -80,9 +80,9 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'hierarchical'        => false,
 			'public'              => false,
 			'show_ui'             => true,
-			'show_in_menu'        => 'edit.php?post_type=formation',
-			'show_in_admin_bar'   => true,
-			'show_in_nav_menus'   => true,
+			'show_in_menu'        => false,
+			'show_in_admin_bar'   => false,
+			'show_in_nav_menus'   => false,
 			'can_export'          => true,
 			'has_archive'         => false,
 			'exclude_from_search' => true,
