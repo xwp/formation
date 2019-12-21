@@ -1,20 +1,27 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
 import InputField from './input';
-import Settings from './settings';
+import Settings from '../select/settings';
 
 const field = {
     ...BaseInput,
-    name: 'formation/text-input',
-    title: __( 'Text Input' ),
+    name: 'formation/radio',
+    title: __( 'Radio' ),
+    category: 'fields',
+    icon: 'forms',
+    keywords: [
+        __( 'Field' ),
+        __( 'Form' ),
+        __( 'Text' )
+    ],
     attributes: {
         ...BaseInput.attributes,
-        type: {
+        options: {
             type: 'string',
         }
     },
     input: InputField,
-    settings: Settings
+    settings: Settings,
 };
 
 const { name } = field;

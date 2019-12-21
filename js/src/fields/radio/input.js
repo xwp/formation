@@ -13,7 +13,7 @@ const InputField = ( props ) => {
             { options && options.split( '\n' ).map( ( parts ) => {
                 return (
                     <div><input
-                        type={ 'checkbox' }
+                        type={ 'radio' }
                         required={ required }
                         placeholder={ placeholder }
                         disabled={ 'disabled' }

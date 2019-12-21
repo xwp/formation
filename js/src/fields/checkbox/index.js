@@ -1,10 +1,7 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
-import FormationInput from './input';
-import FormationInputSettings from './settings';
-
-wp.hooks.addFilter( 'FormationFieldInput', 'Formation', FormationInput );
-wp.hooks.addFilter( 'FormationFieldSettings', 'Formation', FormationInputSettings );
+import InputField from './input';
+import Settings from '../select/settings';
 
 const field = {
     ...BaseInput,
@@ -22,7 +19,9 @@ const field = {
         options: {
             type: 'string',
         }
-    }
+    },
+    input: InputField,
+    settings: Settings,
 };
 
 const { name } = field;

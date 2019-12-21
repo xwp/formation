@@ -1,16 +1,65 @@
 // Get helper functions from global scope
+const { InspectorControls } = wp.editor;
+const { Fragment } = wp.element;
+const { __ } = window.wp.i18n;
 import {
-    ToggleControl,
-    TextControl,
     PanelBody,
 } from '@wordpress/components';
 
-const { InspectorControls } = wp.editor;
-const { Fragment } = wp.element;
+const {
+    FormationFieldInput,
+    FormationFieldSettings,
+    FormationFieldExtensions,
+    FormationFieldLabel,
+} = formation.components;
 
-const { __ } = window.wp.i18n;
-
-const { FormationFieldInput, FormationFieldSettings, FormationFieldExtensions } = formation.components;
+// Define the input field edit component.
+const LabelField = ( props ) => {
+    const {
+        label,
+        slug,
+        required,
+    } = props.attributes;
+    return (
+        <>
+            <label for={ slug }>
+                { label }
+                { required &&
+                <span className={ 'required' }>*</span>
+                }
+            </label>
+        </>
+    );
+};
+const DescriptionField = ( props ) => {
+    const {
+        description,
+    } = props.attributes;
+    return (
+        <>
+            { description &&
+            <div className={ 'description' }>{ description }</div>
+            }
+        </>
+    );
+};
+// Define the input field edit component.
+const InputField = ( props ) => {
+    const {
+        placeholder,
+        required,
+    } = props.attributes;
+    return (
+        <>
+            <input
+                type={ 'text' }
+                required={ required }
+                placeholder={ placeholder }
+                disabled={ 'disabled' }
+            />
+        </>
+    );
+};
 
 // Define the base input field.
 const BaseInput = {
@@ -22,10 +71,17 @@ const BaseInput = {
         __( 'Form' ),
         __( 'Text' )
     ],
+    supports: [
+        'label',
+        'slug',
+        'placeholder',
+        'description',
+        'default',
+        'required',
+    ],
     attributes: {
         label: {
             type: 'string',
-            default: __( 'New Field' )
         },
         slug: {
             type: 'string',
@@ -39,80 +95,33 @@ const BaseInput = {
         required: {
             type: 'bool',
         },
-        default: {
+        default_value: {
             type: 'string',
         },
         _unique_id: {
             type: 'string',
-        }
+        },
     },
+    label: LabelField,
+    input: InputField,
+    settings: ( props ) => ( <></> ),
+    description: DescriptionField,
     edit: ( props ) => {
         const {
-            label,
-            slug,
-            placeholder,
-            description,
-            required,
             _unique_id
         } = props.attributes;
-
-        const toggleAttribute = ( attribute ) => {
-            return ( newValue ) => {
-                props.setAttributes( { [ attribute ]: newValue } );
-            };
-        };
         props.setAttributes( { _unique_id: props.clientId } );
 
         return (
             <Fragment>
                 <InspectorControls>
                     <PanelBody title={ __( 'Field Settings' ) }>
-                        <TextControl
-                            label={ __( 'Label' ) }
-                            value={ label }
-                            onChange={ ( value ) => props.setAttributes( {
-                                label: value,
-                            } ) }
-                        />
-                        <TextControl
-                            label={ __( 'Slug' ) }
-                            value={ slug }
-                            onChange={ ( value ) => props.setAttributes( {
-                                slug: value,
-                            } ) }
-                        />
-                        <TextControl
-                            label={ __( 'Placeholder' ) }
-                            value={ placeholder }
-                            onChange={ ( value ) => props.setAttributes( {
-                                placeholder: value,
-                            } ) }
-                        />
-                        <TextControl
-                            label={ __( 'Description' ) }
-                            value={ description }
-                            onChange={ ( value ) => props.setAttributes( {
-                                description: value,
-                            } ) }
-                        />
-                        <TextControl
-                            label={ __( 'Default Value' ) }
-                            value={ description }
-                            onChange={ ( value ) => props.setAttributes( {
-                                default: value,
-                            } ) }
-                        />
-                        <ToggleControl
-                            label={ 'Required' }
-                            onChange={ toggleAttribute( 'required' ) }
-                            checked={ required }
-                        />
-                        <FormationFieldSettings { ...props }/>
+                        <FormationFieldSettings { ...props } />
                     </PanelBody>
                     <FormationFieldExtensions { ...props } />
                 </InspectorControls>
 
-                <div className={ props.className + ' formation-editor-input' }>
+                <div className={ props.className + ' formation-editor-input' } id={ 'field_' + _unique_id }>
                     <FormationFieldInput { ...props } />
                 </div>
             </Fragment>

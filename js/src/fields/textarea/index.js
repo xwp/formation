@@ -1,10 +1,7 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
-import FormationTextAreaInput from './input';
-import FormationTextAreaSettings from './settings';
-
-wp.hooks.addFilter( 'FormationFieldInput', 'Formation', FormationTextAreaInput );
-wp.hooks.addFilter( 'FormationFieldSettings', 'Formation', FormationTextAreaSettings );
+import InputField from './input';
+import Settings from './settings';
 
 const field = {
     ...BaseInput,
@@ -19,11 +16,13 @@ const field = {
     ],
     attributes: {
         ...BaseInput.attributes,
-        rows : {
+        rows: {
             type: 'number',
             default: 5
         }
-    }
+    },
+    input: InputField,
+    settings: Settings,
 };
 
 const { name } = field;

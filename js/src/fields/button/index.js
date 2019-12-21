@@ -4,8 +4,11 @@ import InputField from './input';
 
 const field = {
     ...BaseInput,
-    name: 'formation/email',
-    title: __( 'Email Address' ),
+    name: 'formation/button',
+    title: __( 'Button' ),
+    supports: [
+        'label'
+    ],
     input: InputField
 };
 

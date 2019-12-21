@@ -5,7 +5,7 @@ import {
 const { __ } = window.wp.i18n;
 
 // Define the additional settings controls.
-const TextAreaSettings = ( props ) => {
+const Settings = ( props ) => {
     const {
         rows,
     } = props.attributes;
@@ -21,17 +21,4 @@ const TextAreaSettings = ( props ) => {
     );
 };
 
-// Define additional settings included in previous settings.
-const FormationTextAreaSettings = ( FormationFieldSettings ) => {
-    return ( props ) => {
-        return ( <>
-                <FormationFieldSettings { ...props } />
-                { props.name === 'formation/text-area' &&
-                <TextAreaSettings { ...props } />
-                }
-            </>
-        );
-    };
-};
-
-export default FormationTextAreaSettings;
+export default Settings;

@@ -136,7 +136,7 @@ class View implements Setup {
 	 */
 	public function render_submit( $post ) {
 		$button_args = array(
-			'value' => __( 'Submit', 'formation' ),
+			'label' => __( 'Submit', 'formation' ),
 			'slug'  => 'submit_' . $post->ID,
 			'type'  => 'submit',
 		);

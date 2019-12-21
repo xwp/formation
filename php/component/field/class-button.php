@@ -22,6 +22,15 @@ class Button extends FieldAbstract {
 	public $type = 'button';
 
 	/**
+	 * Render a label tag for a field.
+	 *
+	 * @return null\
+	 */
+	public function render_label() {
+		return null;
+	}
+
+	/**
 	 * Get the attributes for this fields input tag.
 	 *
 	 * @return array
@@ -39,7 +48,9 @@ class Button extends FieldAbstract {
 	 * @return string
 	 */
 	public function get_input_template() {
-		return '<button %s>%s</button>';
+		$label = $this->get_args( 'label' );
+
+		return '<button %s>' . esc_html( $label ) . '</button>';
 	}
 
 }

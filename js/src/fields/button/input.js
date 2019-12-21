@@ -5,17 +5,14 @@
 // Define the input field edit component.
 const InputField = ( props ) => {
     const {
-        placeholder,
-        required,
+        label,
     } = props.attributes;
     return (
         <>
-            <input
-                type={ 'text' }
-                required={ required }
-                placeholder={ placeholder }
+            <button
+                type={ 'button' }
                 disabled={ 'disabled' }
-            />
+            >{label ? label : '..enter label'}</button>
         </>
     );
 };

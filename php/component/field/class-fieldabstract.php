@@ -70,8 +70,8 @@ abstract class FieldAbstract {
 		$this->set_args( $args );
 		$this->notice_messages = $this->get_notice_messages();
 
-		if ( ! empty( $this->args['default'] ) ) {
-			$this->set_value( $this->args['default'] );
+		if ( ! empty( $this->args['default_value'] ) ) {
+			$this->set_value( $this->args['default_value'] );
 		}
 
 		do_action( 'formation_field_init', $this );
@@ -93,7 +93,7 @@ abstract class FieldAbstract {
 			'description'   => null,
 			'required'      => false,
 			'required_text' => '*',
-			'default'       => null,
+			'default_value' => null,
 		);
 
 		$default_attributes = apply_filters( 'formation_field_default_attributes', $default_attributes, $this );
