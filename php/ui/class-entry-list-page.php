@@ -83,11 +83,11 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 	}
 
 	/**
-	 * Undocumented function
+	 * Updates "Screen Options" selection.
 	 *
 	 * @param mixed $status Unused.
 	 * @param mixed $option Unused.
-	 * @param mixed $value Magic.
+	 * @param mixed $value The value to use for the screen option.
 	 * @return mixed
 	 */
 	public function set_screen( $status, $option, $value ) {
