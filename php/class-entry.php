@@ -143,7 +143,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'referer'  => $referer,
 		);
 		foreach ( $field_instances as $instance ) {
-			$slug                   = $instance->get_arg( 'slug' );
+			$slug                   = $instance->get_args( 'slug' );
 			$entry['data'][ $slug ] = $instance->get_value();
 			if ( ! $instance->is_valid() ) {
 				$entry['invalids'][] = $slug;

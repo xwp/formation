@@ -12,6 +12,8 @@ import {
 import * as textinput from './text-input';
 import * as textarea from './textarea';
 import * as email from './email';
+import * as select from './select';
+import * as checkbox from './checkbox';
 
 // Register fields as blocks.
 export const registerFields = () => {
@@ -19,6 +21,8 @@ export const registerFields = () => {
         textinput,
         textarea,
         email,
+        select,
+        checkbox,
 
     ].forEach( ( block ) => {
         if ( !block ) {

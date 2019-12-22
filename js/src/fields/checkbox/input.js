@@ -20,7 +20,7 @@ const InputField = ( props ) => {
                 }
             </label>
             <input
-                type={ 'text' }
+                type={'checkbox'}
                 required={ required }
                 placeholder={ placeholder }
                 disabled={ 'disabled' }
@@ -37,7 +37,7 @@ const FormationInput = ( FormationFieldInput ) => {
     return ( props ) => {
         return ( <>
                 <FormationFieldInput { ...props } />
-                { props.name === 'formation/email' &&
+                { props.name === 'formation/checkbox' &&
                 <InputField { ...props } />
                 }
             </>

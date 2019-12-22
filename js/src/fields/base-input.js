@@ -39,6 +39,9 @@ const BaseInput = {
         required: {
             type: 'bool',
         },
+        default: {
+            type: 'string',
+        },
         _unique_id: {
             type: 'string',
         }
@@ -90,6 +93,13 @@ const BaseInput = {
                             value={ description }
                             onChange={ ( value ) => props.setAttributes( {
                                 description: value,
+                            } ) }
+                        />
+                        <TextControl
+                            label={ __( 'Default Value' ) }
+                            value={ description }
+                            onChange={ ( value ) => props.setAttributes( {
+                                default: value,
                             } ) }
                         />
                         <ToggleControl

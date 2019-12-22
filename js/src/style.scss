@@ -6,22 +6,44 @@
 @import 'variables';
 
 
-.formation{
+.formation {
 	&-field {
-		display: block;
-		padding: 1.2em;
-		margin : 1em;
+		display : block;
+		padding : 1.2em;
+		margin  : 1em;
 
 		label {
 			display : block;
 		}
 
-		input[type=text], textarea {
+		input[type=email],
+		input[type=search],
+		input[type=tel],
+		input[type=text],
+		input[type=time],
+		input[type=url],
+		input[type=week],
+		select,
+		textarea {
 			width : 100%;
 		}
 
 		.description {
-			font-size:0.8em;
+			font-size : 0.8em;
+		}
+
+		&-notice {
+			&-error {
+				color : $red;
+			}
+
+			&-success {
+				color : $green;
+			}
+
+			&-warning {
+				color : $yellow;
+			}
 		}
 	}
 }
