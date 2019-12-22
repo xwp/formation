@@ -76,8 +76,9 @@ const BaseInput = {
         'slug',
         'placeholder',
         'description',
-        'default',
+        'default_value',
         'required',
+        'repeatable',
     ],
     attributes: {
         label: {
@@ -93,6 +94,9 @@ const BaseInput = {
             type: 'string',
         },
         required: {
+            type: 'bool',
+        },
+        is_repeatable: {
             type: 'bool',
         },
         default_value: {
