@@ -81,7 +81,7 @@ class Form_List_Table implements Component\Setup {
 				$url = \get_admin_url(
 					\get_current_blog_id(),
 					sprintf(
-						'edit.php?post_type=%s&parent=%d',
+						'admin.php?page=%s&parent=%d',
 						\Formation\Entry::$slug,
 						$post_id
 					)
@@ -90,7 +90,7 @@ class Form_List_Table implements Component\Setup {
 				echo sprintf(
 					'<a href="%s" class="button button-primary">%s (%d)</a>',
 					esc_url( $url ),
-					__( 'View Entries', 'formation' ),
+					esc_html( __( 'View Entries', 'formation' ) ),
 					esc_html( $children->found_posts )
 				);
 
