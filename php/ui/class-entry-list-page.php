@@ -14,7 +14,7 @@ use Formation\UI\Extend\Entry_List_Table;
 /**
  * Renders the Entry List Page.
  */
-class Entry_List_Page implements Component\Setup {
+class Entry_List_Page implements Component\Assets, Component\Setup {
 
 	/**
 	 * Holds the plugin instance.
@@ -23,6 +23,15 @@ class Entry_List_Page implements Component\Setup {
 	 * @var     Plugin Instance of the global plugin.
 	 */
 	private $plugin;
+
+	/**
+	 * Holds list of assets.
+	 *
+	 * @var array
+	 */
+	private $assets = array(
+		'public',
+	);
 
 	/**
 	 * The settings Title.
@@ -190,7 +199,7 @@ class Entry_List_Page implements Component\Setup {
 		?>
 		<div class="wrap">
 			<h2><?php echo esc_html( $this->title ); ?></h2>
-			<p class="description">
+
 			<?php
 
 			$form_link = sprintf(
@@ -206,11 +215,23 @@ class Entry_List_Page implements Component\Setup {
 				wp_kses_post( $form_link )
 			);
 			?>
-			</p>
 
-			<?php
-				$this->view_filters();
-			?>
+			<div class="formation-entry-list-filters">
+				<?php
+					$this->view_filters();
+				?>
+				<!-- NOT FUNCTIONING YET -->
+				<div class="date-filter">
+					Date Range:
+					<select>
+						<option value="modified">Modified</option>
+						<option value="creared">Created</option>
+					</select>
+					<input type="date" name="start" />
+					<input type="date" name="end" />
+					<button class="button">Apply</button>
+				</div>
+			</div>
 
 			<div class="formation-entry-list-table">
 				<div class="meta-box-sortables ui-sortable">
@@ -224,5 +245,56 @@ class Entry_List_Page implements Component\Setup {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Register assets to be used for the class.
+	 */
+	public function register_assets() {
+		foreach ( $this->assets as $asset ) {
+			$js_path  = $this->plugin->dir() . '/js/dist/' . $asset . '.asset.php';
+			$css_path = $this->plugin->dir() . '/css/' . $asset . '.css';
+			if ( file_exists( $js_path ) ) {
+				$assets_dep = require_once $js_path;
+				wp_register_script(
+					'formation-' . $asset . '-js',
+					$this->plugin->asset_url( 'js/dist/' . $asset . '.js' ),
+					$assets_dep['dependencies'],
+					$assets_dep['version'],
+					false
+				);
+
+				if ( file_exists( $css_path ) ) {
+					wp_register_style(
+						'formation-' . $asset . '-css',
+						$this->plugin->asset_url( 'css/' . $asset . '.css' ),
+						null,
+						$assets_dep['version']
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Enqueue Assets
+	 */
+	public function enqueue_assets() {
+		wp_enqueue_style( 'formation-public-css' );
+	}
+
+	/**
+	 * Enqueue Assets
+	 */
+	public function enqueue_editor_assets(){}
+
+	/**
+	 * Check if this class is active.
+	 *
+	 * @return bool True if active False if not.
+	 */
+	public function is_active() {
+		$screen = get_current_screen();
+		return $screen instanceof \WP_Screen && isset( $screen->id ) && 'toplevel_page_formation_entry' === $screen->id;
 	}
 }
