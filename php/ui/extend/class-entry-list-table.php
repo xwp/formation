@@ -342,7 +342,7 @@ class Entry_List_Table  extends \WP_List_Table {
 
 		$query = array(
 			'post_type'      => \Formation\Entry::$slug,
-			'post_parent'    => $this->post_id,
+			'post_parent'    => $this->parent_id,
 			'posts_per_page' => 1,
 			'post_status'    => 'publish',
 			'date_query'     => $this->get_date_query(),
