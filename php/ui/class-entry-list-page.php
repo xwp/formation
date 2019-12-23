@@ -320,6 +320,13 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 	public function enqueue_editor_assets(){}
 
 	/**
+	 * Enqueue Front Assets.
+	 *
+	 * @return void
+	 */
+	public function enqueue_front_assets(){}
+
+	/**
 	 * Check if this class is active.
 	 *
 	 * @return bool True if active False if not.
