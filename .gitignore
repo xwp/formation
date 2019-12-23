@@ -7,5 +7,5 @@ node_modules/
 phpcs.xml
 phpunit.xml
 vendor/
-css/
-js/dist/
+css/*.map
+js/dist/*.map

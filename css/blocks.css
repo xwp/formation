@@ -1,0 +1,80 @@
+/**
+ * #.# Styles
+ *
+ * CSS for both Frontend+Backend.
+ */
+.formation-entry-list-filters, .formation-entry-list-actions {
+  background: #ffffff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: 1px solid #ccd0d4;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  margin-bottom: 10px;
+  height: 45px;
+  padding: 0 10px;
+  align-items: center; }
+  .formation-entry-list-filters .subsubsub, .formation-entry-list-actions .subsubsub {
+    float: none;
+    margin: 5px; }
+
+.formation-entry-list-actions {
+  justify-content: flex-end; }
+  .formation-entry-list-actions .button {
+    display: flex;
+    align-items: center; }
+
+.formation-entry-list-table .tablenav.top {
+  display: none; }
+
+.formation-entry-list-table .wp-list-table .column-cb {
+  width: 30px; }
+
+.formation-entry-list-table .wp-list-table .column-name {
+  width: 360px; }
+
+.formation-entry-list-table .wp-list-table .column-preview {
+  width: 100%;
+  padding: 10px 0; }
+
+.formation-entry-list-table .wp-list-table .column-modified {
+  width: 165px; }
+
+.formation-entry-list-table .wp-list-table .column-submitted {
+  width: 165px; }
+
+.formation-field {
+  display: block;
+  padding: 0.7em;
+  margin: 0.4em; }
+  .formation-field label {
+    display: block; }
+  .formation-field input[type=email],
+  .formation-field input[type=search],
+  .formation-field input[type=tel],
+  .formation-field input[type=text],
+  .formation-field input[type=time],
+  .formation-field input[type=url],
+  .formation-field input[type=week],
+  .formation-field select,
+  .formation-field textarea {
+    width: 100%; }
+  .formation-field .description {
+    font-size: 0.8em; }
+  .formation-field-notice-error {
+    color: #dc3232; }
+  .formation-field-notice-success {
+    color: #46b450; }
+  .formation-field-notice-warning {
+    color: #ffba00; }
+
+.formation-repeatable {
+  border: 1px solid #ccc;
+  padding: 6px;
+  border-radius: 4px;
+  margin-top: 6px; }
+  .formation-repeatable-container {
+    margin-bottom: 6px; }
+
+
+/*# sourceMappingURL=blocks.css.map*/
