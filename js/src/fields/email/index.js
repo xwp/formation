@@ -1,13 +1,12 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
-import FormationInput from './input';
-
-wp.hooks.addFilter( 'FormationFieldInput', 'Formation', FormationInput );
+import InputField from './input';
 
 const field = {
     ...BaseInput,
     name: 'formation/email',
     title: __( 'Email Address' ),
+    input: InputField
 };
 
 const { name } = field;

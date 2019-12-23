@@ -1,12 +1,12 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
 import InputField from './input';
-import Settings from './settings';
+import Settings from '../select/settings';
 
 const field = {
     ...BaseInput,
-    name: 'formation/textarea',
-    title: __( 'Text Area' ),
+    name: 'formation/radio',
+    title: __( 'Radio' ),
     category: 'fields',
     icon: 'forms',
     keywords: [
@@ -16,9 +16,8 @@ const field = {
     ],
     attributes: {
         ...BaseInput.attributes,
-        rows: {
-            type: 'number',
-            default: 5
+        options: {
+            type: 'string',
         }
     },
     input: InputField,

@@ -28,9 +28,15 @@ interface Assets {
 	public function enqueue_editor_assets();
 
 	/**
+	 * Enqueue front Assets
+	 */
+	public function enqueue_front_assets();
+
+	/**
 	 * Check if this class is active.
 	 *
 	 * @return bool True if active False if not.
 	 */
 	public function is_active();
+
 }

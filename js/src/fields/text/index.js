@@ -5,24 +5,16 @@ import Settings from './settings';
 
 const field = {
     ...BaseInput,
-    name: 'formation/textarea',
-    title: __( 'Text Area' ),
-    category: 'fields',
-    icon: 'forms',
-    keywords: [
-        __( 'Field' ),
-        __( 'Form' ),
-        __( 'Text' )
-    ],
+    name: 'formation/text',
+    title: __( 'Text Input' ),
     attributes: {
         ...BaseInput.attributes,
-        rows: {
-            type: 'number',
-            default: 5
+        type: {
+            type: 'string',
         }
     },
     input: InputField,
-    settings: Settings,
+    settings: Settings
 };
 
 const { name } = field;

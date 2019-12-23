@@ -53,25 +53,54 @@ abstract class FieldAbstract {
 	private $notice_messages = array();
 
 	/**
+	 * Plugin component.
+	 *
+	 * @var \Formation\Plugin
+	 */
+	public $plugin;
+
+	/**
+	 * Entry component
+	 *
+	 * @var \Formation\Entry
+	 */
+	public $entry;
+
+	/**
+	 * Holds the Field component.
+	 *
+	 * @var \Formation\Field
+	 */
+	public $field;
+
+	/**
+	 * The associated block for the field.
+	 *
+	 * @var array
+	 */
+	public $block;
+
+
+	/**
 	 * Initiate the Field.
 	 *
-	 * @param array $args Field instance args.
+	 * @param array             $args   Field instance args.
+	 * @param \Formation\Plugin $plugin Instance of the main plugin.
+	 * @param array             $block  The field block object.
 	 */
-	public function __construct( $args ) {
+	public function __construct( $args, $plugin, $block ) {
+		$this->plugin = $plugin;
+		$this->entry  = $plugin->components['entry'];
+		$this->field  = $plugin->components['field'];
+		$this->block  = $block;
+
 		$default_attributes = $this->get_default_attributes();
 		$args               = wp_parse_args( $args, $default_attributes );
-		// Sanitize the slag/id.
-		if ( ! empty( $args['slug'] ) ) {
-			$args['slug'] = sanitize_key( $args['slug'] );
-		} else {
-			$args['slug'] = sanitize_key( $args['label'] );
-		}
-
 		$this->set_args( $args );
 		$this->notice_messages = $this->get_notice_messages();
 
-		if ( ! empty( $this->args['default'] ) ) {
-			$this->set_value( $this->args['default'] );
+		if ( ! empty( $this->args['default_value'] ) ) {
+			$this->set_value( $this->args['default_value'] );
 		}
 
 		do_action( 'formation_field_init', $this );
@@ -93,7 +122,8 @@ abstract class FieldAbstract {
 			'description'   => null,
 			'required'      => false,
 			'required_text' => '*',
-			'default'       => null,
+			'is_repeatable' => null,
+			'default_value' => null,
 		);
 
 		$default_attributes = apply_filters( 'formation_field_default_attributes', $default_attributes, $this );
@@ -137,9 +167,11 @@ abstract class FieldAbstract {
 	/**
 	 * Renders a field.
 	 *
+	 * @param string $content Content created by block renderer.
+	 *
 	 * @return string
 	 */
-	public function render() {
+	public function render( $content = null ) {
 
 		$html = array();
 
@@ -203,7 +235,54 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_value() {
+		if ( $this->entry->is_submitting() ) {
+			$this->set_value( $this->get_submitted_value() );
+		}
+
 		return $this->args['value'];
+	}
+
+	/**
+	 * Get submitted value.
+	 *
+	 * @return mixed
+	 */
+	public function get_submitted_value() {
+		$name = $this->get_base_name();
+		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
+
+		return $value;
+	}
+
+	/**
+	 * Get the field id.
+	 *
+	 * @return string
+	 */
+	public function get_id() {
+		return $this->args['slug'];
+	}
+
+	/**
+	 * Get the field base name.
+	 *
+	 * @return string
+	 */
+	public function get_base_name() {
+		$slug = $this->args['slug'];
+
+		return $slug;
+	}
+
+	/**
+	 * Get the field name.
+	 *
+	 * @return string
+	 */
+	public function get_input_name() {
+		$name = $this->get_base_name();
+
+		return $name;
 	}
 
 	/**
@@ -222,7 +301,7 @@ abstract class FieldAbstract {
 	 *
 	 * @return mixed
 	 */
-	private function validate_value( $value ) {
+	protected function validate_value( $value ) {
 		// Let the validate start checking if error for 3rd party plugins to be able to send errors when populating.
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
@@ -319,6 +398,7 @@ abstract class FieldAbstract {
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
 			'value'       => $this->args['value'],
+			'data-field'  => $this->type,
 		);
 
 		return $attributes;

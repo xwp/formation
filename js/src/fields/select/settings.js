@@ -5,7 +5,7 @@ import {
 const { __ } = window.wp.i18n;
 
 // Define the additional settings controls.
-const InputSettings = ( props ) => {
+const Settings = ( props ) => {
     const {
         options,
     } = props.attributes;
@@ -21,17 +21,4 @@ const InputSettings = ( props ) => {
     );
 };
 
-// Define additional settings included in previous settings.
-const FormationInputSelectSettings = ( FormationFieldSettings ) => {
-    return ( props ) => {
-        return ( <>
-                <FormationFieldSettings { ...props } />
-                { props.name === 'formation/select' &&
-                <InputSettings { ...props } />
-                }
-            </>
-        );
-    };
-};
-
-export default FormationInputSelectSettings;
+export default Settings;

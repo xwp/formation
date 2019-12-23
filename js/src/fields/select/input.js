@@ -5,43 +5,21 @@
 // Define the input field edit component.
 const InputField = ( props ) => {
     const {
-        label,
-        slug,
         placeholder,
-        description,
         required,
+        options,
     } = props.attributes;
+
     return (
-        <>
-            <label for={ slug }>
-                { label }
-                { required &&
-                <span className={ 'required' }>*</span>
-                }
-            </label>
-            <select
-                required={ required }
-                placeholder={ placeholder }
-                disabled={ 'disabled' }
-            />
-            { description &&
-            <div className={ 'description' }>{ description }</div>
-            }
-        </>
+        <select
+            required={ required }
+            placeholder={ placeholder }
+        >
+            { options && options.split( '\n' ).map( ( parts ) => {
+                return <option>{ parts.split( '|' )[ 1 ] ? parts.split( '|' )[ 1 ] + ' (' + parts.split( '|' )[ 0 ] + ')' : parts.split( '|' )[ 0 ] }</option>;
+            } ) }
+        </select>
     );
 };
 
-// Add the component on text inputs only.
-const FormationInput = ( FormationFieldInput ) => {
-    return ( props ) => {
-        return ( <>
-                <FormationFieldInput { ...props } />
-                { props.name === 'formation/select' &&
-                <InputField { ...props } />
-                }
-            </>
-        );
-    };
-};
-
-export default FormationInput;
+export default InputField;

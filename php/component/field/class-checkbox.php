@@ -12,27 +12,16 @@ use Formation;
 /**
  * Class TextArea
  */
-class Checkbox extends FieldAbstract {
+class Checkbox extends Select {
 
 	/**
 	 * The field type.
 	 *
 	 * @var string
 	 */
-	public $type = 'select';
+	public $type = 'checkbox';
 
-	/**
-	 * Get the attributes for this fields input tag.
-	 *
-	 * @return array
-	 */
-	public function get_input_attributes() {
-		$attributes = parent::get_input_attributes();
-		unset( $attributes['value'] );
-		unset( $attributes['type'] );
-
-		return $attributes;
-	}
+	public $data_att;
 
 	/**
 	 * Get the input template string for this fields input.
@@ -45,41 +34,108 @@ class Checkbox extends FieldAbstract {
 		return '<div %s>' . $options . '</div>';
 	}
 
+	/**
+	 * Get the attributes for this fields input tag.
+	 *
+	 * @return array
+	 */
+	public function get_input_attributes() {
+
+		$attributes     = parent::get_input_attributes();
+		$this->data_att = $attributes['data-field'];
+
+		unset( $attributes['data-field'] );
+
+		return $attributes;
+	}
 
 	/**
-	 * Build the options for the select.
+	 * Get the input template string for this fields input.
 	 *
 	 * @return string
 	 */
-	public function build_options() {
-		$options     = $this->get_args( 'options' );
-		$option_html = array();
-		if ( ! empty( $options ) ) {
-			$options     = explode( "\n", $options );
-			$value       = $this->get_value();
-			$option_html = array();
-			$name_id     = $this->get_args( 'slug' );
-			foreach ( $options as $index => $option ) {
-				$part = explode( '|', $option );
-				if ( empty( $part[1] ) ) {
-					$part[1] = $part[0];
-				}
-				$is_checked         = checked( $part[0], $value, false );
-				$option_atts        = array(
-					'type'    => 'checkbox',
-					'value'   => $part[0],
-					'name'    => $name_id . '[' . $index . ']',
-					'id'      => $name_id . '_' . $index,
-					'checked' => empty( $is_checked ) ? false : true,
-				);
-				$option_atts_string = Formation\Component\Utility\Utils::build_attributes( $option_atts );
-				$option_html[]      = sprintf( '<label><input %s />%s</label>', $option_atts_string, esc_html( $part[1] ) );
-
-			}
-		}
-		$option_html = array_filter( $option_html );
-
-		return implode( $option_html );
+	public function get_option_template() {
+		return '<label><input %s />%s</label>';
 	}
 
+	/**
+	 * Build a single option.
+	 *
+	 * @param string $option_value The value of the option.
+	 * @param int    $index        The option index/number.
+	 *
+	 * @return array
+	 */
+	public function get_option_attributes( $option_value, $index ) {
+		$value       = $this->get_value();
+		$is_checked  = checked( $option_value, $value, false );
+		$option_atts = array(
+			'type'       => $this->type,
+			'value'      => $option_value,
+			'name'       => $this->get_option_name(),
+			'id'         => $this->get_option_id( $index ),
+			'checked'    => empty( $is_checked ) ? false : true,
+			'data-field' => $this->data_att,
+		);
+
+		return $option_atts;
+	}
+
+	/**
+	 * Get the name for the option input.
+	 *
+	 * @return string
+	 */
+	public function get_option_name() {
+		$name = $this->get_input_name();
+
+		return $name . '[]';
+	}
+
+	/**
+	 * Get the id for the option input.
+	 *
+	 * @return string
+	 */
+	public function get_option_id( $index ) {
+		$slug = $this->get_args( 'slug' );
+
+		return $slug . '_' . $index;
+	}
+
+	/**
+	 * Get submitted value.
+	 *
+	 * @return mixed
+	 */
+	public function get_submitted_value() {
+		$name  = $this->get_base_name();
+		$args  = array(
+			$name => array(
+				'flags' => FILTER_REQUIRE_ARRAY,
+			),
+		);
+		$value = filter_input_array( INPUT_POST, $args, true );
+
+		return $value[ $name ];
+	}
+
+	/**
+	 * Sanitizes the input value.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 *
+	 * @return mixed|\WP_Error
+	 */
+	public function sanitize_value( $value ) {
+
+		$value = array_map(
+			function ( $value ) {
+				return sanitize_text_field( $value );
+			},
+			(array) $value
+		);
+
+		return $value;
+	}
 }

@@ -12,7 +12,7 @@ use Formation\Component;
 /**
  * Handles Formation's fields handling.
  */
-class Field implements Component\Pre_Setup, Component\Setup {
+class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
 
 	/**
 	 * All fields registered.
@@ -51,12 +51,14 @@ class Field implements Component\Pre_Setup, Component\Setup {
 	 */
 	public function get_fields() {
 		$fields = array(
-			'formation/text-input' => '\Formation\Component\Field\Text_Input',
-			'formation/text-area'  => '\Formation\Component\Field\TextArea',
+			'formation/text'       => '\Formation\Component\Field\Text_Input',
+			'formation/textarea'   => '\Formation\Component\Field\TextArea',
 			'formation/button'     => '\Formation\Component\Field\Button',
 			'formation/email'      => '\Formation\Component\Field\Email',
 			'formation/select'     => '\Formation\Component\Field\Select',
 			'formation/checkbox'   => '\Formation\Component\Field\Checkbox',
+			'formation/radio'      => '\Formation\Component\Field\Radio',
+			'formation/repeatable' => '\Formation\Component\Field\Repeater',
 		);
 
 		return $fields;
@@ -115,11 +117,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
 				if ( $init ) {
-					$field = new $init( $block['attrs'] );
-					$value = filter_input( INPUT_POST, $field->get_args( 'slug' ), FILTER_DEFAULT );
-					if ( ! is_null( $value ) ) {
-						$field->set_value( $value );
-					}
+					$field                                               = new $init( $block['attrs'], $this->plugin, $block );
 					$this->instances[ $field->get_args( '_unique_id' ) ] = $field;
 					$block['formationField']                             = $field;
 				}
@@ -149,10 +147,30 @@ class Field implements Component\Pre_Setup, Component\Setup {
 	/**
 	 * Render a field instance.
 	 */
-	public function render( $args ) {
+	public function render( $args, $content ) {
 		if ( $this->instances[ $args['_unique_id'] ] ) {
-			return $this->instances[ $args['_unique_id'] ]->render();
+			return $this->instances[ $args['_unique_id'] ]->render( $content );
 		}
 	}
 
+	public function is_active() {
+		return ! empty( $this->instances );
+	}
+
+	public function register_assets() {
+		// TODO: Implement register_assets() method.
+	}
+
+	public function enqueue_assets() {
+		// TODO: Implement enqueue_assets() method.
+	}
+
+	public function enqueue_editor_assets() {
+		// TODO: Implement enqueue_editor_assets() method.
+	}
+
+	public function enqueue_front_assets() {
+		wp_enqueue_script( 'formation-public-js' );
+		wp_enqueue_style( 'formation-public-css' );
+	}
 }

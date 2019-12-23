@@ -1,13 +1,15 @@
 const { __ } = window.wp.i18n;
 import BaseInput from '../base-input';
-import FormationTextInput from './input';
-
-wp.hooks.addFilter( 'FormationFieldInput', 'Formation', FormationTextInput );
+import InputField from './input';
 
 const field = {
     ...BaseInput,
-    name: 'formation/text-input',
-    title: __( 'Text Input' ),
+    name: 'formation/button',
+    title: __( 'Button' ),
+    supports: [
+        'label'
+    ],
+    input: InputField
 };
 
 const { name } = field;
