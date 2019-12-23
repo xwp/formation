@@ -65,7 +65,7 @@ class Repeater extends FieldAbstract {
 			'id'          => $this->args['slug'],
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
-			'value'       => wp_json_encode( $this->args['value'] ),
+			'value'       => ! is_null( $this->args['value'] ) ? wp_json_encode( $this->args['value'] ) : '',
 			'data-parent' => $this->args['_unique_id'],
 		);
 
@@ -81,20 +81,26 @@ class Repeater extends FieldAbstract {
 	 */
 	protected function validate_value( $value ) {
 
-		foreach ( $value as &$item ) {
-			foreach ( $this->fields as $field ) {
-				$field_instance = $this->field->instances[ $field ];
-				$field_name     = $field_instance->get_base_name();
-				$proposed_value = $field_instance->validate_value( $item[ $field_name ] );
-				if ( is_wp_error( $proposed_value ) ) {
-					$this->set_notice( $proposed_value->get_error_code() );
-					$this->valid = false;
+		if ( true === $this->args['required'] && is_null( $value ) ) {
+			$this->set_notice( 'required' );
+		} elseif ( is_array( $value ) ) {
+			foreach ( $value as &$item ) {
+				foreach ( $this->fields as $field ) {
+					if ( isset( $this->field->instances[ $field ] ) ) {
+						$field_instance = $this->field->instances[ $field ];
+						$field_name     = $field_instance->get_base_name();
+						$proposed_value = $field_instance->validate_value( $item[ $field_name ] );
+						if ( is_wp_error( $proposed_value ) ) {
+							$this->set_notice( $proposed_value->get_error_code() );
+							$this->valid = false;
+						}
+						$item[ $field_name ] = $proposed_value;
+					}
 				}
-				$item[ $field_name ] = $proposed_value;
 			}
 		}
 
-		return $proposed_value;
+		return $value;
 	}
 
 	/**
@@ -115,7 +121,7 @@ class Repeater extends FieldAbstract {
 		$template['repeatable_template_end']           = '</div>';
 		$template['repeatable_template_wrapper_end']   = '</div>';
 		$template['repeatable_container_start']        = '<div class="formation-repeatable-container" data-container="' . esc_attr( $this->args['_unique_id'] ) . '"></div>';
-		$template['repeatable_add_button']             = '<button type="button" class="button" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['label'] ) . '</button>';
+		$template['repeatable_add_button']             = '<button type="button" class="button" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['description'] ) . '</button>';
 		$template['repeatable_entry_input']            = $this->render_input();
 		$template['repeatable_container_end']          = '</div>';
 
@@ -137,6 +143,14 @@ class Repeater extends FieldAbstract {
 	 */
 	public function get_submitted_value() {
 
+		// Set inner blocks to repeatable to stop processing.
+		foreach ( $this->fields as $field ) {
+			if ( isset( $this->field->instances[ $field ] ) ) {
+				$this->field->instances[ $field ]->set_args( [ 'is_repeatable' => true ] );
+			}
+		}
+
+		// Get value from input.
 		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
 		return json_decode( $value, true );

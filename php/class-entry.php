@@ -143,6 +143,9 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'referer'  => $referer,
 		);
 		foreach ( $field_instances as $instance ) {
+			if ( $instance->get_args( 'is_repeatable' ) ) {
+				continue;// Repeatable fields are kept in it's container.
+			}
 			$slug                   = $instance->get_args( 'slug' );
 			$entry['data'][ $slug ] = $instance->get_value();
 			if ( ! $instance->is_valid() ) {

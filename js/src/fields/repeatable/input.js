@@ -10,11 +10,11 @@ const { InnerBlocks } = wp.editor;
 // Define the input field edit component.
 const InputField = ( props ) => {
     const {
-        label,
+        description,
     } = props.attributes;
-    if ( !label ) {
+    if ( !description ) {
         props.setAttributes( {
-            label: __( 'Add Item' )
+            description: __( 'Add Item' )
         } );
     }
     return (
@@ -25,7 +25,7 @@ const InputField = ( props ) => {
             <button
                 type={ 'button' }
                 className={ 'button' }
-            >{ label }</button>
+            >{ description }</button>
         </>
     );
 };

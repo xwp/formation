@@ -15,10 +15,9 @@ const field = {
     },
     supports: [
         'label',
+        'description',
         'slug',
     ],
-
-    label: () => ( <></> ),
     input: InputField,
     description: () => ( <></> ),
     save: () => {

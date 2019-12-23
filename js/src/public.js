@@ -64,12 +64,16 @@ const addGroup = ( event ) => {
         field.name = null;
     } );
     copy.formationEntry = struct;
-    copy.querySelector( '[data-closer]' ).addEventListener( 'click', () => {
-        copy.remove();
-    } );
     holder.append( copy );
     repeatable( copy );
     repeaterEntries[ repeater ].push( copy );
+    copy.querySelector( '[data-closer]' ).addEventListener( 'click', () => {
+        const entry = repeaterEntries[ repeater ].indexOf( copy );
+        repeaterEntries[ repeater ].splice( entry, 1 );
+        copy.remove();
+
+        buildEntries( repeater );
+    } );
     elementJSON( copy, repeater );
 };
 

@@ -99,7 +99,7 @@ const FormationFieldSettings = ( props ) => {
                 } ) }
             />
             }
-            { supports( 'description' ) &&
+            { supports( 'default_value' ) &&
             <TextControl
                 label={ __( 'Default Value' ) }
                 value={ default_value }
