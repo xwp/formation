@@ -220,6 +220,7 @@ class Entry_List_Table  extends \WP_List_Table {
 			case 'preview':
 				return Utils::trim_text( $item->post_content, 200 );
 			case 'submitted':
+				return get_date_from_gmt( $item->post_date_gmt );
 			case 'modified':
 				return get_date_from_gmt( $item->post_modified_gmt );
 			default:
@@ -295,6 +296,45 @@ class Entry_List_Table  extends \WP_List_Table {
 	}
 
 	/**
+	 * Gets a date query to apply to WP_Query.
+	 *
+	 * @return array
+	 */
+	private function get_date_query() {
+		$date_query = array();
+		$range_mode = Input::text( 'dm' );
+		$date_start = Input::text( 'ds' );
+		$date_end   = Input::text( 'de' );
+
+		if ( ! empty( $range_mode ) && ! empty( $date_start ) && ! empty( $date_end ) ) {
+			$range_column         = 'modified' === $range_mode ? 'post_modified_gmt' : 'post_date_gmt';
+			$date_query['column'] = $range_column;
+
+			list( $y1, $m1, $d1 ) = explode( '-', $date_start );
+			list( $y2, $m2, $d2 ) = explode( '-', $date_end );
+
+			/**
+			 * Use y, m, d array because strtotime value causes 00:00:00 time
+			 * which gets ignored. ¯\_(ツ)_/¯
+			 */
+			$date_query['after'] = array(
+				'year'  => $y1,
+				'month' => $m1,
+				'day'   => $d1,
+			);
+
+			$date_query['before'] = array(
+				'year'  => $y2,
+				'month' => $m2,
+				'day'   => $d2,
+			);
+
+			$date_query['inclusive'] = true;
+		}
+		return $date_query;
+	}
+
+	/**
 	 * Handles data query and filter, sorting, and pagination.
 	 */
 	public function prepare_items() {
@@ -304,6 +344,7 @@ class Entry_List_Table  extends \WP_List_Table {
 			'post_parent'    => $this->post_id,
 			'posts_per_page' => 1,
 			'post_status'    => 'publish',
+			'date_query'     => $this->get_date_query(),
 		);
 
 		/**
@@ -321,14 +362,14 @@ class Entry_List_Table  extends \WP_List_Table {
 
 		$this->_column_headers = $this->get_column_info();
 
+		/**
+		 * Pagination.
+		 */
 		$per_page     = $this->get_items_per_page( 'entries_per_page', 25 );
 		$current_page = $this->get_pagenum();
 		$total_items  = 'publish' === Input::text( 'post_status', 'publish' ) ?
 			$this->publish_count :
 			$this->trash_count;
-
-		$order_by = Input::text( 'orderby' );
-		$order    = Input::text( 'order' );
 
 		$this->set_pagination_args(
 			array(
@@ -337,19 +378,28 @@ class Entry_List_Table  extends \WP_List_Table {
 			)
 		);
 
-		$children = new \WP_Query(
-			array(
-				'post_type'      => \Formation\Entry::$slug,
-				'post_parent'    => $this->parent_id,
-				'posts_per_page' => $per_page,
-				'paged'          => $current_page,
-				'page'           => $current_page,
-				'order_by'       => $order_by,
-				'order'          => $order,
-				'post_status'    => Input::text( 'post_status', 'publish' ),
-			)
+		/**
+		 * Ordering.
+		 */
+		$order_by = Input::text( 'orderby' );
+		$order    = Input::text( 'order' );
+
+		/**
+		 * The Query.
+		 */
+		$query = array(
+			'post_type'      => \Formation\Entry::$slug,
+			'post_parent'    => $this->parent_id,
+			'posts_per_page' => $per_page,
+			'paged'          => $current_page,
+			'page'           => $current_page,
+			'order_by'       => $order_by,
+			'order'          => $order,
+			'post_status'    => Input::text( 'post_status', 'publish' ),
+			'date_query'     => $this->get_date_query(),
 		);
 
+		$children    = new \WP_Query( $query );
 		$this->items = $children->posts;
 	}
 

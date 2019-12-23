@@ -169,6 +169,47 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 	}
 
 	/**
+	 * Output date range filter.
+	 *
+	 * @return void
+	 */
+	public function date_range_filters() {
+
+		$args = array(
+			'ds',
+			'de',
+			'dm',
+		);
+
+		$mode        = Input::text( 'dm' );
+		$is_applied  = ! empty( $mode );
+		$clean_url   = remove_query_arg( $args );
+		$button_text = $is_applied ? __( 'Clear', 'formation' ) : __( 'Apply', 'formation' );
+
+		?>
+			<div class="date-filter">
+				<form method="get">
+					<input type="hidden" name="page" value="<?php echo esc_attr( Input::text( 'page' ) ); ?>" />
+					<input type="hidden" name="parent" value="<?php echo esc_attr( Input::text( 'parent' ) ); ?>" />
+					Date Range:
+					<select name="dm">
+						<option value="created" <?php selected( $mode, 'created' ); ?>><?php esc_html_e( 'submitted', 'formation' ); ?></option>
+						<option value="modified" <?php selected( $mode, 'modified' ); ?>><?php esc_html_e( 'modified', 'formation' ); ?></option>
+					</select>
+					<input type="date" name="ds" value="<?php echo esc_attr( Input::text( 'ds' ) ); ?>" />
+					<input type="date" name="de" value="<?php echo esc_attr( Input::text( 'de' ) ); ?>" />
+					<?php if ( $is_applied ) : ?>
+						<input type="submit" class="button" value="<?php esc_attr_e( 'apply', 'formation' ); ?>" />
+						<a class="button" href="<?php echo esc_url_raw( $clean_url ); ?>"><?php echo esc_html_e( 'clear', 'formation' ); ?></a>
+					<?php else : ?>
+						<input type="submit" class="button" value="<?php esc_attr_e( 'apply', 'formation' ); ?>" />
+					<?php endif; ?>
+				</form>
+			</div>
+		<?php
+	}
+
+	/**
 	 * Render the list page.
 	 *
 	 * @return void
@@ -219,18 +260,8 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 			<div class="formation-entry-list-filters">
 				<?php
 					$this->view_filters();
+					$this->date_range_filters();
 				?>
-				<!-- NOT FUNCTIONING YET -->
-				<div class="date-filter">
-					Date Range:
-					<select>
-						<option value="modified">Modified</option>
-						<option value="creared">Created</option>
-					</select>
-					<input type="date" name="start" />
-					<input type="date" name="end" />
-					<button class="button">Apply</button>
-				</div>
 			</div>
 
 			<div class="formation-entry-list-table">
