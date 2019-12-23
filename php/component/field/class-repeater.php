@@ -22,6 +22,19 @@ class Repeater extends FieldAbstract {
 	public $type = 'repeater';
 
 	/**
+	 * Inner Fields
+	 *
+	 * @var array
+	 */
+	public $fields;
+	/**
+	 * Flags the field as valid or not.
+	 *
+	 * @var bool
+	 */
+	private $valid = true;
+
+	/**
 	 * Initiate the Field.
 	 *
 	 * @param array             $args   Field instance args.
@@ -30,40 +43,59 @@ class Repeater extends FieldAbstract {
 	 */
 	public function __construct( $args, $plugin, $block ) {
 		parent::__construct( $args, $plugin, $block );
+		$field_types = array_keys( $this->field->fields );
 
-		$field_types = array_keys( $this->field->get_fields() );
-		foreach ( $block['innerBlocks'] as &$inner_block ) {
-			if( isset( $inner_block['attrs']['_unique_id'] ) && isset( $this->field->instances[ $inner_block['attrs']['_unique_id'] ] ) ) {
-				$this->field->instances[ $inner_block['attrs']['_unique_id'] ]['attrs']['slug'] .= '[]';
-			}
+		foreach ( $block['innerBlocks'] as $inner_block ) {
 			if ( in_array( $inner_block['blockName'], $field_types, true ) ) {
-
+				$this->fields[] = $inner_block['attrs']['_unique_id'];
 			}
 		}
 	}
 
 	/**
-	 * Get the name for the option input.
+	 * Get the attributes for this fields input tag.
 	 *
-	 * @param int $index The option index.
-	 *
-	 * @return string
+	 * @return array
 	 */
-	public function get_option_name( $index ) {
-		return $this->get_args( 'slug' );
+	public function get_input_attributes() {
+
+		$attributes = array(
+			'type'        => 'hidden',
+			'name'        => $this->args['slug'],
+			'id'          => $this->args['slug'],
+			'placeholder' => $this->args['placeholder'],
+			'required'    => $this->args['required'],
+			'value'       => wp_json_encode( $this->args['value'] ),
+			'data-parent' => $this->args['_unique_id'],
+		);
+
+		return $attributes;
 	}
 
 	/**
-	 * Get the id for the option input.
+	 * Validates a value.
 	 *
-	 * @param int $index The option index.
+	 * @param \WP_Error|mixed $value The value to validate.
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public function get_option_id( $index ) {
-		return $this->get_args( 'slug' );
-	}
+	protected function validate_value( $value ) {
 
+		foreach ( $value as &$item ) {
+			foreach ( $this->fields as $field ) {
+				$field_instance = $this->field->instances[ $field ];
+				$field_name     = $field_instance->get_base_name();
+				$proposed_value = $field_instance->validate_value( $item[ $field_name ] );
+				if ( is_wp_error( $proposed_value ) ) {
+					$this->set_notice( $proposed_value->get_error_code() );
+					$this->valid = false;
+				}
+				$item[ $field_name ] = $proposed_value;
+			}
+		}
+
+		return $proposed_value;
+	}
 
 	/**
 	 * Renders a field.
@@ -73,17 +105,27 @@ class Repeater extends FieldAbstract {
 	 * @return string
 	 */
 	public function render( $content = null ) {
-		$template = '<div class="formation-field">';
-		$template .= '<div data-template="' . esc_attr( $this->args['_unique_id'] ) . '" style="display:none;visibility:hidden;">';
-		$template .= '<div class="formation-repeatable">';
-		$template .= '<button type="button" data-closer="true">&times;</button>';
-		$template .= $content;
-		$template .= '</div>';
-		$template .= '</div>';
-		$template .= '<div class="formation-repeatable-container" data-container="' . esc_attr( $this->args['_unique_id'] ) . '"></div>';
-		$template .= '<button type="button" class="button" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['label'] ) . '</button>';
-		$template .= '</div>';
+		$template = array();
 
+		$template['repeatable_wrapper_start']          = '<div class="formation-field">';
+		$template['repeatable_template_wrapper_start'] = '<div data-template="' . esc_attr( $this->args['_unique_id'] ) . '" style="display:none;visibility:hidden;">';
+		$template['repeatable_template_start']         = '<div class="formation-repeatable">';
+		$template['repeatable_template_closer']        = '<button type="button" data-closer="true">&times;</button>';
+		$template['repeatable_template']               = $content;
+		$template['repeatable_template_end']           = '</div>';
+		$template['repeatable_template_wrapper_end']   = '</div>';
+		$template['repeatable_container_start']        = '<div class="formation-repeatable-container" data-container="' . esc_attr( $this->args['_unique_id'] ) . '"></div>';
+		$template['repeatable_add_button']             = '<button type="button" class="button" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['label'] ) . '</button>';
+		$template['repeatable_entry_input']            = $this->render_input();
+		$template['repeatable_container_end']          = '</div>';
+
+		$html = apply_filters( 'formation_field_structure', $template );
+		$html = apply_filters( 'formation_field_structure_' . $this->type, $html );
+
+
+		$html = array_filter( $html );
+
+		return implode( $html );
 
 		return $template;
 	}
@@ -95,12 +137,9 @@ class Repeater extends FieldAbstract {
 	 */
 	public function get_submitted_value() {
 
-		// Get the names of the inner blocks.
+		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
-
-		$value = filter_input_array( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
-
-		return $value;
+		return json_decode( $value, true );
 	}
 
 }

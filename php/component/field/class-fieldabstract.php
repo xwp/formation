@@ -68,6 +68,7 @@ abstract class FieldAbstract {
 
 	/**
 	 * Holds the Field component.
+	 *
 	 * @var \Formation\Field
 	 */
 	public $field;
@@ -247,7 +248,8 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_submitted_value() {
-		$value = filter_input_array( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
+		$name = $this->get_base_name();
+		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
 		return $value;
 	}
@@ -299,7 +301,7 @@ abstract class FieldAbstract {
 	 *
 	 * @return mixed
 	 */
-	private function validate_value( $value ) {
+	protected function validate_value( $value ) {
 		// Let the validate start checking if error for 3rd party plugins to be able to send errors when populating.
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
@@ -396,6 +398,7 @@ abstract class FieldAbstract {
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
 			'value'       => $this->args['value'],
+			'data-field'  => $this->type,
 		);
 
 		return $attributes;

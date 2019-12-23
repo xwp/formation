@@ -117,7 +117,7 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
 				if ( $init ) {
-					$field                                               = new $init( $block['attrs'], $this->plugin );
+					$field                                               = new $init( $block['attrs'], $this->plugin, $block );
 					$this->instances[ $field->get_args( '_unique_id' ) ] = $field;
 					$block['formationField']                             = $field;
 				}

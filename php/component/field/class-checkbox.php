@@ -21,6 +21,8 @@ class Checkbox extends Select {
 	 */
 	public $type = 'checkbox';
 
+	public $data_att;
+
 	/**
 	 * Get the input template string for this fields input.
 	 *
@@ -30,6 +32,21 @@ class Checkbox extends Select {
 		$options = $this->build_options();
 
 		return '<div %s>' . $options . '</div>';
+	}
+
+	/**
+	 * Get the attributes for this fields input tag.
+	 *
+	 * @return array
+	 */
+	public function get_input_attributes() {
+
+		$attributes     = parent::get_input_attributes();
+		$this->data_att = $attributes['data-field'];
+
+		unset( $attributes['data-field'] );
+
+		return $attributes;
 	}
 
 	/**
@@ -53,11 +70,12 @@ class Checkbox extends Select {
 		$value       = $this->get_value();
 		$is_checked  = checked( $option_value, $value, false );
 		$option_atts = array(
-			'type'    => $this->type,
-			'value'   => $option_value,
-			'name'    => $this->get_option_name( $index ),
-			'id'      => $this->get_option_id( $index ),
-			'checked' => empty( $is_checked ) ? false : true,
+			'type'       => $this->type,
+			'value'      => $option_value,
+			'name'       => $this->get_option_name(),
+			'id'         => $this->get_option_id( $index ),
+			'checked'    => empty( $is_checked ) ? false : true,
+			'data-field' => $this->data_att,
 		);
 
 		return $option_atts;
@@ -66,20 +84,16 @@ class Checkbox extends Select {
 	/**
 	 * Get the name for the option input.
 	 *
-	 * @param int $index The option index.
-	 *
 	 * @return string
 	 */
-	public function get_option_name( $index ) {
+	public function get_option_name() {
 		$name = $this->get_input_name();
 
-		return $name . '[' . $index . ']';
+		return $name . '[]';
 	}
 
 	/**
 	 * Get the id for the option input.
-	 *
-	 * @param int $index The option index.
 	 *
 	 * @return string
 	 */
