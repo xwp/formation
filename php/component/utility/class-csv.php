@@ -48,9 +48,15 @@ class CSV {
 
 		ob_start();
 		$df = fopen( 'php://output', 'w' );
-		fputcsv( $df, array_keys( reset( $data ) ) );
+
+		$header_row = array();
+		self::flatten_keys( $header_row, $data );
+		fputcsv( $df, $header_row );
+
 		foreach ( $data as $row ) {
-			fputcsv( $df, $row );
+			$item_row = array();
+			self::flatten_items( $item_row, $row );
+			fputcsv( $df, $item_row );
 		}
 
 		// Not dealing with the actual filesystem. WP_Filesystem gets in the way here.
@@ -67,5 +73,44 @@ class CSV {
 		}
 
 		return $csv;
+	}
+
+	/**
+	 * Flattens hierarchical keys.
+	 *
+	 * @param array   $result The final result will be stored here.
+	 * @param array   $array The input data.
+	 * @param string  $parent Used to keep track of parent keys to construct hierarchy.
+	 * @param integer $offset Because child_1 looks better than child_0 to end users.
+	 * @return void
+	 */
+	private static function flatten_keys( &$result, $array, $parent = '', $offset = 1 ) {
+		foreach ( $array as $key => $item ) {
+			if ( 'integer' === gettype( $key ) ) {
+				$key = $key + $offset;
+			}
+			if ( is_array( $item ) ) {
+				self::flatten_keys( $result, $item, $parent . $key . '_' );
+				continue;
+			}
+			$result[] = ltrim( $parent . $key, '1_' );
+		}
+	}
+
+	/**
+	 * Flattens hierarchical items.
+	 *
+	 * @param array $result The final result will be stored here.
+	 * @param array $array The input data.
+	 * @return void
+	 */
+	private static function flatten_items( &$result, $array ) {
+		foreach ( $array as $item ) {
+			if ( is_array( $item ) ) {
+				self::flatten_items( $result, $item );
+				continue;
+			}
+			$result[] = $item;
+		}
 	}
 }
