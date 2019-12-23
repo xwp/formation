@@ -10,8 +10,8 @@
 .formation {
 	&-field {
 		display : block;
-		padding : 1.2em;
-		margin  : 1em;
+		padding : 0.7em;
+		margin  : 0.4em;
 
 		label {
 			display : block;
@@ -45,6 +45,16 @@
 			&-warning {
 				color : $yellow;
 			}
+		}
+	}
+
+	&-repeatable{
+		border: 1px solid #ccc;
+		padding: 6px;
+		border-radius: 4px;
+		margin-top: 6px;
+		&-container{
+			margin-bottom: 6px;
 		}
 	}
 }

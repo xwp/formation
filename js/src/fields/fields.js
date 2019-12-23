@@ -7,6 +7,7 @@ import * as select from './select';
 import * as checkbox from './checkbox';
 import * as button from './button';
 import * as radio from './radio';
+import * as repeatable from './repeatable';
 
 export const Fields = {
     'formation/text': text,
@@ -16,6 +17,7 @@ export const Fields = {
     'formation/checkbox': checkbox,
     'formation/button': button,
     'formation/radio': radio,
+    'formation/repeatable': repeatable,
 };
 
 let names = [];

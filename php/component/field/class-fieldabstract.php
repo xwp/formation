@@ -67,29 +67,34 @@ abstract class FieldAbstract {
 	public $entry;
 
 	/**
+	 * Holds the Field component.
+	 * @var \Formation\Field
+	 */
+	public $field;
+
+	/**
+	 * The associated block for the field.
+	 *
+	 * @var array
+	 */
+	public $block;
+
+
+	/**
 	 * Initiate the Field.
 	 *
 	 * @param array             $args   Field instance args.
 	 * @param \Formation\Plugin $plugin Instance of the main plugin.
-	 * @param int               $index  Field instance index.
+	 * @param array             $block  The field block object.
 	 */
-	public function __construct( $args, $plugin, $index = 0 ) {
+	public function __construct( $args, $plugin, $block ) {
 		$this->plugin = $plugin;
 		$this->entry  = $plugin->components['entry'];
+		$this->field  = $plugin->components['field'];
+		$this->block  = $block;
 
 		$default_attributes = $this->get_default_attributes();
 		$args               = wp_parse_args( $args, $default_attributes );
-		// Sanitize the slag/id.
-		if ( ! empty( $args['slug'] ) ) {
-			$args['slug'] = sanitize_key( $args['slug'] );
-		} else {
-			if ( ! empty( $args['label'] ) ) {
-				$args['slug'] = sanitize_key( $args['label'] );
-			} else {
-				$args['slug'] = $this->type . '_' . $index;
-			}
-		}
-
 		$this->set_args( $args );
 		$this->notice_messages = $this->get_notice_messages();
 
@@ -161,9 +166,11 @@ abstract class FieldAbstract {
 	/**
 	 * Renders a field.
 	 *
+	 * @param string $content Content created by block renderer.
+	 *
 	 * @return string
 	 */
-	public function render() {
+	public function render( $content = null ) {
 
 		$html = array();
 
@@ -248,23 +255,19 @@ abstract class FieldAbstract {
 	/**
 	 * Get the field id.
 	 *
-	 * @param int $index The field instance index.
-	 *
 	 * @return string
 	 */
-	public function get_id( $index = 0 ) {
-		return $this->args['slug'] . '_' . $index;
+	public function get_id() {
+		return $this->args['slug'];
 	}
 
 	/**
 	 * Get the field base name.
 	 *
-	 * @param int $index The field instance index.
-	 *
 	 * @return string
 	 */
-	public function get_base_name( $index = 0 ) {
-		$slug = $this->args['slug'] . '_' . $index;
+	public function get_base_name() {
+		$slug = $this->args['slug'];
 
 		return $slug;
 	}
@@ -272,15 +275,10 @@ abstract class FieldAbstract {
 	/**
 	 * Get the field name.
 	 *
-	 * @param int $index The field instance index.
-	 *
 	 * @return string
 	 */
-	public function get_input_name( $index = 0 ) {
-		$name = $this->get_base_name( $index );
-		if ( $this->args['is_repeatable'] ) {
-			$name .= '[' . $index . ']';
-		}
+	public function get_input_name() {
+		$name = $this->get_base_name();
 
 		return $name;
 	}

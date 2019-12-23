@@ -233,7 +233,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 					$this->plugin->asset_url( 'js/dist/' . $asset . '.js' ),
 					$assets_dep['dependencies'],
 					$assets_dep['version'],
-					false
+					true
 				);
 
 				if ( file_exists( $css_path ) ) {

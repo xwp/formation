@@ -121,7 +121,7 @@ class View implements Setup {
 			'value' => $post->ID,
 			'slug'  => self::FORM_ID_KEY,
 		);
-		$reference      = new Field\Hidden( $reference_args, $this->plugin );
+		$reference      = new Field\Hidden( $reference_args, $this->plugin, null );
 		$nonce[]        = $reference->render( $reference_args );
 
 		return $nonce;
@@ -140,7 +140,7 @@ class View implements Setup {
 			'slug'  => 'submit_' . $post->ID,
 			'type'  => 'submit',
 		);
-		$button      = new Field\Button( $button_args, $this->plugin );
+		$button      = new Field\Button( $button_args, $this->plugin, null );
 
 		return $button->render();
 
