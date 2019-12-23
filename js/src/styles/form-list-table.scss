@@ -1,0 +1,57 @@
+.formation-entry-list-filters {
+    background: #ffffff;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin-bottom: 10px;
+    height: 45px;
+    padding: 0 10px;
+    align-items: center;
+
+    .subsubsub {
+        float: none;
+        margin: 5px;
+    }
+}
+
+.formation-entry-list-table {
+    .tablenav.top {
+        display: none;
+    }
+
+    .wp-list-table {
+
+        tr {
+
+        }
+
+        th, tr {
+
+        }
+
+        .column-cb {
+            width: 30px;
+        }
+
+        .column-name {
+            width: 360px;
+
+        }
+        .column-preview {
+            width: 100%;
+            padding: 10px 0;
+        }
+        .column-modified {
+            width: 165px;
+        }
+        .column-submitted {
+            width: 165px;
+        }
+
+    }
+
+
+
+}

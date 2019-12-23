@@ -85,15 +85,22 @@ class Plugin {
 	 * that extend the Customizer to ensure resources are available in time.
 	 */
 	public function init() {
-		$components = glob( __DIR__ . '/class-*.php' );
-		foreach ( $components as $component ) {
-			$component_name = strstr( str_replace( 'class-', '', basename( $component ) ), '.php', true );
-			if ( 'plugin' === $component_name ) {
-				continue;
+
+		$component_sets = array(
+			'Formation\\' => glob( __DIR__ . '/class-*.php' ),
+			'Formation\\UI\\' => glob( __DIR__ . '/ui/class-*.php' ),
+		);
+
+		foreach ( $component_sets as $ns => $components ) {
+			foreach ( $components as $component ) {
+				$component_name = strstr( str_replace( 'class-', '', basename( $component ) ), '.php', true );
+				if ( 'plugin' === $component_name ) {
+					continue;
+				}
+				$method                              = str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $component_name ) ) );
+				$class_name                          = $ns . $method;
+				$this->components[ $component_name ] = new $class_name( $this );
 			}
-			$method                              = str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $component_name ) ) );
-			$class_name                          = 'Formation\\' . $method;
-			$this->components[ $component_name ] = new $class_name( $this );
 		}
 	}
 

@@ -24,7 +24,7 @@ class Utils {
 	 */
 	public static function build_attributes( $attributes_array ) {
 		// setup attributes.
-		$attributes = [];
+		$attributes = array();
 		foreach ( $attributes_array as $att => $value ) {
 			if ( is_bool( $value ) || is_null( $value ) ) {
 				if ( true === $value ) {
@@ -40,6 +40,22 @@ class Utils {
 		}
 
 		return implode( ' ', $attributes );
+	}
+
+	/**
+	 * Trim a blob of text.
+	 *
+	 * @param string $text Text to trim.
+	 * @param int    $length Characters to trim it to.
+	 * @param string $pattern A suffic to the trimmed text.
+	 * @return string
+	 */
+	public static function trim_text( $text, $length, $pattern = '…' ) {
+		if ( strlen( $text ) > $length ) {
+			$offset = ( $length - 3 ) - strlen( $text );
+			$text   = substr( $text, 0, strrpos( $text, ' ', $offset ) ) . $pattern;
+		}
+		return $text;
 	}
 
 }
