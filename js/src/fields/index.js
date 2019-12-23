@@ -8,12 +8,11 @@ import {
     registerBlockType,
 } from '@wordpress/blocks';
 
-import { Fields } from './fields';
+import { FieldObjects } from './fields';
 
 // Register fields as blocks.
 export const registerFields = () => {
-    Fields.forEach( ( block ) => {
-        console.log( block );
+    FieldObjects.forEach( ( block ) => {
         if ( !block ) {
             return;
         }

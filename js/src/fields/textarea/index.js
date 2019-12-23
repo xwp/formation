@@ -5,7 +5,7 @@ import Settings from './settings';
 
 const field = {
     ...BaseInput,
-    name: 'formation/text-area',
+    name: 'formation/textarea',
     title: __( 'Text Area' ),
     category: 'fields',
     icon: 'forms',

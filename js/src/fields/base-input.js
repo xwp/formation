@@ -6,12 +6,9 @@ import {
     PanelBody,
 } from '@wordpress/components';
 
-const {
-    FormationFieldInput,
-    FormationFieldSettings,
-    FormationFieldExtensions,
-    FormationFieldLabel,
-} = formation.components;
+import FormationFieldInput from '../components/field-input';
+import FormationFieldSettings from '../components/field-settings';
+import FormationFieldExtensions from '../components/field-extentions';
 
 // Define the input field edit component.
 const LabelField = ( props ) => {
@@ -101,6 +98,9 @@ const BaseInput = {
         },
         default_value: {
             type: 'string',
+        },
+        has_conditions: {
+            type: 'bool',
         },
         _unique_id: {
             type: 'string',

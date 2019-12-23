@@ -17,3 +17,12 @@ export const Fields = {
     'formation/button': button,
     'formation/radio': radio,
 };
+
+let names = [];
+let objects = [];
+for ( const block in Fields ) {
+    names.push( block );
+    objects.push( Fields[ block ] );
+}
+export const FieldObjects = objects;
+export const FieldNames = names;

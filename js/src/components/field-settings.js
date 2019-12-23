@@ -73,7 +73,6 @@ const FormationFieldSettings = ( props ) => {
                         slug: value,
                     } );
                     if ( value.length <= 0 ) {
-                        console.log( label );
                         setLabel( label );
                     }
                 } }
