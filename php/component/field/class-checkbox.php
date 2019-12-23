@@ -71,9 +71,9 @@ class Checkbox extends Select {
 	 * @return string
 	 */
 	public function get_option_name( $index ) {
-		$slug = $this->get_args( 'slug' );
+		$name = $this->get_input_name();
 
-		return $slug . '[' . $index . ']';
+		return $name . '[' . $index . ']';
 	}
 
 	/**
@@ -87,5 +87,41 @@ class Checkbox extends Select {
 		$slug = $this->get_args( 'slug' );
 
 		return $slug . '_' . $index;
+	}
+
+	/**
+	 * Get submitted value.
+	 *
+	 * @return mixed
+	 */
+	public function get_submitted_value() {
+		$name  = $this->get_base_name();
+		$args  = array(
+			$name => array(
+				'flags' => FILTER_REQUIRE_ARRAY,
+			),
+		);
+		$value = filter_input_array( INPUT_POST, $args, true );
+
+		return $value[ $name ];
+	}
+
+	/**
+	 * Sanitizes the input value.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 *
+	 * @return mixed|\WP_Error
+	 */
+	public function sanitize_value( $value ) {
+
+		$value = array_map(
+			function ( $value ) {
+				return sanitize_text_field( $value );
+			},
+			(array) $value
+		);
+
+		return $value;
 	}
 }

@@ -109,12 +109,18 @@ const BaseInput = {
     label: LabelField,
     input: InputField,
     settings: ( props ) => ( <></> ),
+    extension: ( props ) => ( <></> ),
     description: DescriptionField,
     edit: ( props ) => {
         const {
             _unique_id
         } = props.attributes;
-        props.setAttributes( { _unique_id: props.clientId } );
+
+        // Set only if one is not set. moving/reloading creates a new one. lets
+        // keep the first one created.
+        if ( !_unique_id ) {
+            props.setAttributes( { _unique_id: props.clientId } );
+        }
 
         return (
             <Fragment>
@@ -125,7 +131,10 @@ const BaseInput = {
                     <FormationFieldExtensions { ...props } />
                 </InspectorControls>
 
-                <div className={ props.className + ' formation-editor-input' } id={ 'field_' + _unique_id }>
+                <div
+                    className={ props.className + ' formation-editor-input' }
+                    id={ 'field_' + _unique_id }
+                >
                     <FormationFieldInput { ...props } />
                 </div>
             </Fragment>

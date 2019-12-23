@@ -57,7 +57,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			'formation/email'      => '\Formation\Component\Field\Email',
 			'formation/select'     => '\Formation\Component\Field\Select',
 			'formation/checkbox'   => '\Formation\Component\Field\Checkbox',
-			'formation/radio'   => '\Formation\Component\Field\Radio',
+			'formation/radio'      => '\Formation\Component\Field\Radio',
 		);
 
 		return $fields;
@@ -116,11 +116,7 @@ class Field implements Component\Pre_Setup, Component\Setup {
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
 				if ( $init ) {
-					$field = new $init( $block['attrs'] );
-					$value = filter_input( INPUT_POST, $field->get_args( 'slug' ), FILTER_DEFAULT );
-					if ( ! is_null( $value ) ) {
-						$field->set_value( $value );
-					}
+					$field                                               = new $init( $block['attrs'], $this->plugin );
 					$this->instances[ $field->get_args( '_unique_id' ) ] = $field;
 					$block['formationField']                             = $field;
 				}

@@ -53,18 +53,41 @@ abstract class FieldAbstract {
 	private $notice_messages = array();
 
 	/**
+	 * Plugin component.
+	 *
+	 * @var \Formation\Plugin
+	 */
+	public $plugin;
+
+	/**
+	 * Entry component
+	 *
+	 * @var \Formation\Entry
+	 */
+	public $entry;
+
+	/**
 	 * Initiate the Field.
 	 *
-	 * @param array $args Field instance args.
+	 * @param array             $args   Field instance args.
+	 * @param \Formation\Plugin $plugin Instance of the main plugin.
+	 * @param int               $index  Field instance index.
 	 */
-	public function __construct( $args ) {
+	public function __construct( $args, $plugin, $index = 0 ) {
+		$this->plugin = $plugin;
+		$this->entry  = $plugin->components['entry'];
+
 		$default_attributes = $this->get_default_attributes();
 		$args               = wp_parse_args( $args, $default_attributes );
 		// Sanitize the slag/id.
 		if ( ! empty( $args['slug'] ) ) {
 			$args['slug'] = sanitize_key( $args['slug'] );
 		} else {
-			$args['slug'] = sanitize_key( $args['label'] );
+			if ( ! empty( $args['label'] ) ) {
+				$args['slug'] = sanitize_key( $args['label'] );
+			} else {
+				$args['slug'] = $this->type . '_' . $index;
+			}
 		}
 
 		$this->set_args( $args );
@@ -93,6 +116,7 @@ abstract class FieldAbstract {
 			'description'   => null,
 			'required'      => false,
 			'required_text' => '*',
+			'is_repeatable' => null,
 			'default_value' => null,
 		);
 
@@ -203,7 +227,62 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_value() {
+		if ( $this->entry->is_submitting() ) {
+			$this->set_value( $this->get_submitted_value() );
+		}
+
 		return $this->args['value'];
+	}
+
+	/**
+	 * Get submitted value.
+	 *
+	 * @return mixed
+	 */
+	public function get_submitted_value() {
+		$value = filter_input_array( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
+
+		return $value;
+	}
+
+	/**
+	 * Get the field id.
+	 *
+	 * @param int $index The field instance index.
+	 *
+	 * @return string
+	 */
+	public function get_id( $index = 0 ) {
+		return $this->args['slug'] . '_' . $index;
+	}
+
+	/**
+	 * Get the field base name.
+	 *
+	 * @param int $index The field instance index.
+	 *
+	 * @return string
+	 */
+	public function get_base_name( $index = 0 ) {
+		$slug = $this->args['slug'] . '_' . $index;
+
+		return $slug;
+	}
+
+	/**
+	 * Get the field name.
+	 *
+	 * @param int $index The field instance index.
+	 *
+	 * @return string
+	 */
+	public function get_input_name( $index = 0 ) {
+		$name = $this->get_base_name( $index );
+		if ( $this->args['is_repeatable'] ) {
+			$name .= '[' . $index . ']';
+		}
+
+		return $name;
 	}
 
 	/**

@@ -2,6 +2,10 @@
  * Formation field edit.
  */
 
+/**
+ * External dependencies
+ */
+
 // Define the input field edit component.
 const InputField = ( props ) => {
     const {

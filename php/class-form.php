@@ -66,7 +66,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * @since  0.1
 	 */
 	public function setup() {
-		add_filter( 'allowed_block_types', array( $this, 'block_types' ), 10, 2 );
+		//add_filter( 'allowed_block_types', array( $this, 'block_types' ), 10, 2 );
 		add_filter( 'block_categories', array( $this, 'block_category' ), 10, 2 );
 		register_block_type(
 			'formation/form-embed',
@@ -107,19 +107,29 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * @return array|bool
 	 */
 	public function block_types( $blocks, $post ) {
-
 		if ( self::$slug === $post->post_type ) {
-			// @todo Decide which block we'll allow (if not all) and add our form element blocks.
-			$fields  = $this->plugin->components['field']->get_fields();
-			$types   = array_keys( $fields );
-			$allowed = array(
+			$block_registry = \WP_Block_Type_Registry::get_instance();
+			$block_types    = array_keys( $block_registry->get_all_registered() );
+
+			$allowed = array_filter(
+				$block_types,
+				function ( $type ) {
+					return false === strpos( $type, 'core/' ) ? false : true;
+				}
+			);
+			$my_allowed = array(
 				'core/columns',
 				'core/image',
 				'core/paragraph',
 				'core/heading',
 				'core/list',
+				'core/block',
+
 			);
-			$blocks  = array_merge( $types, $allowed );
+			$fields = $this->plugin->components['field']->get_fields();
+			$types  = array_keys( $fields );
+
+			$blocks = array_merge( $types, $allowed );
 		}
 
 		return $blocks;

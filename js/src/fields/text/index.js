@@ -5,7 +5,7 @@ import Settings from './settings';
 
 const field = {
     ...BaseInput,
-    name: 'formation/text-input',
+    name: 'formation/text',
     title: __( 'Text Input' ),
     attributes: {
         ...BaseInput.attributes,
