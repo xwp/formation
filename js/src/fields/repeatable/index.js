@@ -17,6 +17,7 @@ const field = {
         'label',
         'description',
         'slug',
+        'required',
     ],
     input: InputField,
     description: () => ( <></> ),
