@@ -210,6 +210,21 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 	}
 
 	/**
+	 * Outputs CSV download link.
+	 *
+	 * @return void
+	 */
+	public function csv_download_button() {
+		$url  = add_query_arg( array( 'action' => 'download-csv' ) );
+		$html = sprintf(
+			'<a class="button" href="%s"><span class="dashicons dashicons-media-text"></span>%s</a>',
+			esc_url_raw( $url ),
+			esc_html__( 'Download Resulst CSV', 'formation' )
+		);
+		echo \wp_kses_post( $html );
+	}
+
+	/**
 	 * Render the list page.
 	 *
 	 * @return void
@@ -273,6 +288,12 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 					</form>
 				</div>
 				<br class="clear">
+			</div>
+
+			<div class="formation-entry-list-actions">
+				<?php
+					$this->csv_download_button();
+				?>
 			</div>
 		</div>
 		<?php
