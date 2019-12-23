@@ -8,6 +8,7 @@
 namespace Formation\UI\Extend;
 
 use Formation\Component\Utility\Input;
+use Formation\Component\Utility\CSV;
 use Formation\Component\Utility\Utils;
 
 /**
@@ -430,6 +431,13 @@ class Entry_List_Table  extends \WP_List_Table {
 					$this->set_entry_status( $id, str_replace( 'bulk-', '', $this->action ) );
 				}
 				break;
+			case 'download-csv':
+				$items    = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
+				$date     = gmdate( 'Y_m_d__H_i_s' );
+				$filename = sprintf( '%s-%s.csv', get_the_title( $this->parent_id ), $date );
+				$filename = apply_filters( 'formation_csv_download_filename', $filename, $this->parent_id );
+				CSV::array_to_csv( $items, $filename, true, remove_query_arg( 'action' ) );
+				exit;
 			default:
 				return;
 		}
@@ -473,6 +481,36 @@ class Entry_List_Table  extends \WP_List_Table {
 		return $views;
 	}
 
+	/**
+	 * Get entries similar to the displayed results.
+	 *
+	 * @return array
+	 */
+	private function prepare_for_download() {
+
+		$order_by = Input::text( 'orderby' );
+		$order    = Input::text( 'order' );
+
+		$download_items = array();
+
+		$query = array(
+			'post_type'      => \Formation\Entry::$slug,
+			'post_parent'    => $this->parent_id,
+			'posts_per_page' => -1,
+			'order_by'       => $order_by,
+			'order'          => $order,
+			'post_status'    => Input::text( 'post_status', 'publish' ),
+			'date_query'     => $this->get_date_query(),
+		);
+
+		$children = new \WP_Query( $query );
+
+		foreach ( $children->posts as $post ) {
+			$download_items[] = json_decode( $post->post_content, true );
+		}
+
+		return $download_items;
+	}
 	/**
 	 * Set post status.
 	 *
