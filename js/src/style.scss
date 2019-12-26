@@ -4,17 +4,34 @@
  * CSS for both Frontend+Backend.
  */
 @import 'variables';
-
 @import './styles/form-list-table.scss';
+@import './styles/keyframes';
+@import './styles/easing-functions';
+@import './styles/typography';
+@import './styles/icons';
+
 
 .formation {
 	&-field {
-		display : block;
-		padding : 0.7em;
-		margin  : 0.4em;
+		display    : block;
+		padding    : 0.7em;
+		margin-top : 16px;
 
-		label {
-			display : block;
+		&-label {
+			position       : relative;
+			overflow       : hidden;
+			margin         : 8px 0 4px;
+			text-transform : uppercase;
+			color          : $darkish-blue;
+			font-size      : 12px;
+			font-weight    : bold;
+			line-height    : 11px;
+			letter-spacing : 0.5pt;
+		}
+
+		.required {
+			font-size : 11px;
+			color     : $darkish-blue;
 		}
 
 		input[type=email],
@@ -27,6 +44,95 @@
 		select,
 		textarea {
 			width : 100%;
+		}
+
+		.formation-field-checkbox,
+		.formation-field-radio,
+		.formation-field-select {
+			width  : 100%;
+			margin : 0 0 8px;
+
+			li {
+				position : relative;
+				display  : flex;
+				margin   : 0 0 8px;
+
+				label {
+					color        : $charcoal-grey;
+					margin       : 10px 16px;
+					padding-left : 10px;
+					font-size    : 14px;
+					line-height  : 20px;
+					font-weight  : $normal;
+
+					&::before,
+					&::after {
+						position   : absolute;
+						content    : '';
+						transition : border-color 120ms $ease-out-quad;
+					}
+
+					&::before {
+						left          : 0;
+						top           : 0;
+						width         : 100%;
+						height        : 100%;
+						border        : none;
+						border-radius : 5px;
+					}
+
+					&::after {
+						left          : 14px;
+						top           : 14px;
+						width         : 14px;
+						height        : 14px;
+						border-radius : 3px;
+						border        : 1px solid $cloudy-blue;
+					}
+
+					&:hover {
+						&::before {
+							border-color : $cloudy-blue;
+						}
+					}
+				}
+			}
+
+			input {
+				margin     : 0 15px 0 1px;
+				visibility : hidden;
+
+				&:checked ~ label {
+					color : $charcoal-grey;
+
+					&::before {
+						background-color : rgba(0, 154, 255, 0.05);
+						border-color     : rgba(0, 154, 255, 0.5);
+					}
+
+					&::after {
+						border : 1px solid $azure;
+					}
+				}
+
+				&[type='checkbox'] {
+					&:checked ~ label::after {
+						@extend %icon-check;
+						background-color : $azure;
+						background-size  : 14px 14px;
+					}
+				}
+
+				&[type='radio'] {
+					& ~ label::after {
+						border-radius : 50%;
+					}
+
+					&:checked ~ label::after {
+						border-width : 5px;
+					}
+				}
+			}
 		}
 
 		.description {
@@ -46,15 +152,184 @@
 				color : $yellow;
 			}
 		}
+
+
+		&-button {
+			border-radius    : 4px;
+			padding          : 11px;
+			min-width        : 150px;
+			outline          : none;
+			cursor           : pointer;
+			border           : 1px solid transparent;
+			color            : $white;
+			background-color : $darkish-blue;
+			font-size        : 14px;
+			font-weight      : $normal;
+			text-align       : center;
+			transition       : color 90ms $ease-out-cubic, border-color 90ms $ease-out-cubic, background-color 90ms $ease-out-cubic;
+
+			&[disabled],
+			&.gf-default-disabled {
+				opacity : 0.1;
+			}
+
+			&:hover,
+			&:focus {
+				border-color     : $cloudy-blue;
+				color            : $steel;
+				background-color : transparent;
+			}
+
+			&.gform_previous_button {
+				border-color     : $pale-lilac;
+				color            : $steel;
+				background-color : transparent;
+
+				&:hover,
+				&:focus {
+					border-color : $cloudy-blue;
+				}
+			}
+		}
+		.button-repeater {
+			border         : 0;
+			background     : none;
+			text-transform : uppercase;
+			font-size      : 11px;
+			line-height    : 22px;
+			font-weight    : $bold;
+			letter-spacing : 1px;
+			padding-left   : 36px;
+			color          : $darkish-blue;
+			position       : relative;
+			cursor         : pointer;
+
+			&:focus {
+				outline : none;
+			}
+
+			&::before {
+				@extend %icon-add;
+				content             : '';
+				position            : absolute;
+				top                 : 0;
+				left                : 0;
+				width               : 25px;
+				height              : 25px;
+				border              : none;
+				background-position : center;
+				background-size     : 12px;
+				background-color    : $white;
+			}
+
+			&::after {
+				content       : '';
+				position      : absolute;
+				width         : 25px;
+				height        : 25px;
+				left          : 0;
+				top           : 0;
+				border-radius : 50%;
+				border        : 1px dashed $cloudy-blue;
+			}
+		}
+
+
+		.box-close {
+			display         : flex;
+			position        : absolute;
+			top             : -26px;
+			right           : 0;
+			line-height     : 0;
+			font-size       : 14px;
+			width           : 20px;
+			height          : 20px;
+			align-items     : center;
+			justify-content : center;
+			cursor          : pointer;
+		}
+
+		input,
+		select,
+		textarea {
+			font-size     : 14px !important; // The GF stylesheet is very specific for these two, so we're using an !important rule...
+			line-height   : 24px;
+			padding       : 7px 0 10px !important;
+			border        : none;
+			outline       : none;
+			border-bottom : 1px solid $pale-lilac;
+			color         : $charcoal-grey;
+		}
+
+		textarea {
+			border : 1px solid $pale-lilac;
+		}
+
+		select {
+			@extend %icon-chevron;
+			position            : relative;
+			background-color    : transparent;
+			background-position : calc(100% - 14px) 50%;
+			background-size     : 16px;
+			border-radius       : 0;
+			-webkit-appearance  : none;
+		}
+
+		.description {
+			padding     : 0;
+			margin      : 0 0 8px;
+			font-size   : 16px;
+			font-weight : $light;
+			color       : $steel;
+		}
 	}
 
-	&-repeatable{
-		border: 1px solid #ccc;
-		padding: 6px;
-		border-radius: 4px;
-		margin-top: 6px;
-		&-container{
-			margin-bottom: 6px;
+
+	&-repeatable {
+		border        : 1px solid #ccc;
+		padding       : 6px;
+		border-radius : 4px;
+		margin-top    : 6px;
+
+		&-container {
+			margin-bottom : 6px;
 		}
+	}
+}
+
+// General layout - columns
+@media (min-width : 641px) {
+	.formation {
+		display         : flex;
+		flex-flow       : row wrap;
+		justify-content : space-between;
+
+		&-field {
+			width         : 100%;
+			flex          : 0 0 auto;
+			padding-right : 0;
+
+			&.half {
+				width : calc(50% - 8px);
+			}
+		}
+	}
+
+	.small,
+	.medium,
+	.large {
+		width : 100%;
+	}
+
+	.small {
+		max-width : 180px;
+	}
+
+	.medium {
+		max-width : 400px;
+	}
+
+	.large {
+		max-width : 840px;
 	}
 }

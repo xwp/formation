@@ -111,7 +111,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			$block_registry = \WP_Block_Type_Registry::get_instance();
 			$block_types    = array_keys( $block_registry->get_all_registered() );
 
-			$allowed = array_filter(
+			$allowed    = array_filter(
 				$block_types,
 				function ( $type ) {
 					return false === strpos( $type, 'core/' ) ? false : true;
@@ -126,8 +126,8 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 				'core/block',
 
 			);
-			$fields = $this->plugin->components['field']->get_fields();
-			$types  = array_keys( $fields );
+			$fields     = $this->plugin->components['field']->get_fields();
+			$types      = array_keys( $fields );
 
 			$blocks = array_merge( $types, $allowed );
 		}
@@ -284,9 +284,11 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	private function load_form_data() {
 
 		$data  = array(
-			array(
-				'label' => null,
-				'value' => null,
+			'forms' => array(
+				array(
+					'label' => null,
+					'value' => null,
+				),
 			),
 		);
 		$forms = get_posts(
@@ -296,14 +298,16 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			)
 		);
 		foreach ( $forms as $form ) {
-			$data[] = array(
+			$data['forms'][] = array(
 				'label' => $form->post_title,
 				'value' => $form->ID,
 			);
 		}
 
+		$data['field_attributes'] = $this->plugin->components['field']->get_field_block_attributes();
+
 		$script = 'var Formation = ' . wp_json_encode( $data );
-		wp_add_inline_script( 'formation-blocks-js', $script );
+		wp_add_inline_script( 'formation-editor-js', $script );
 	}
 
 	/**

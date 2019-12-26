@@ -31,7 +31,7 @@ class Checkbox extends Select {
 	public function get_input_template() {
 		$options = $this->build_options();
 
-		return '<div %s>' . $options . '</div>';
+		return '<ul %s>' . $options . '</ul>';
 	}
 
 	/**
@@ -52,10 +52,12 @@ class Checkbox extends Select {
 	/**
 	 * Get the input template string for this fields input.
 	 *
+	 * @param int $index The index of the option.
+	 *
 	 * @return string
 	 */
-	public function get_option_template() {
-		return '<label><input %s />%s</label>';
+	public function get_option_template( $index ) {
+		return '<li><input %s /><label for="' . $this->get_option_id( $index ) . '">%s</label></li>';
 	}
 
 	/**

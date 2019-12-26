@@ -99,12 +99,13 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	 * Setup the object.
 	 */
 	public function post_setup() {
-		if ( $form = $this->is_submitting() ) {
+		if ( $this->is_submitting() ) {
 			$submission = $this->get_submission();
 			if ( is_array( $submission ) && empty( $submission['invalids'] ) ) {
 				$this->capture_entry( $submission );
 			} else {
 				// @todo: output general error.
+
 			}
 		}
 	}

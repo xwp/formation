@@ -35,8 +35,8 @@ class Radio extends Checkbox {
 	 *
 	 * @return string
 	 */
-	public function get_option_id() {
-		return $this->get_args( 'slug' );
+	public function get_option_id( $index ) {
+		return $this->get_args( 'slug' ) . '_' . $index;
 	}
 
 }

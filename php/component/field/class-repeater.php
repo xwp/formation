@@ -43,11 +43,23 @@ class Repeater extends FieldAbstract {
 	 */
 	public function __construct( $args, $plugin, $block ) {
 		parent::__construct( $args, $plugin, $block );
-		$field_types = array_keys( $this->field->fields );
+		$this->register_inners_fields( $block );
+	}
 
+	/**
+	 * Register inner blocks that gontain fields.
+	 *
+	 * @param array $block The bloock to get inners fields for.
+	 */
+	public function register_inners_fields( $block ) {
+		$field_types = array_keys( $this->field->fields );
 		foreach ( $block['innerBlocks'] as $inner_block ) {
 			if ( in_array( $inner_block['blockName'], $field_types, true ) ) {
 				$this->fields[] = $inner_block['attrs']['_unique_id'];
+			}
+			// Go deeper.
+			if ( ! empty( $inner_block['innerBlocks'] ) ) {
+				$this->register_inners_fields( $inner_block );
 			}
 		}
 	}
@@ -59,15 +71,11 @@ class Repeater extends FieldAbstract {
 	 */
 	public function get_input_attributes() {
 
-		$attributes = array(
-			'type'        => 'hidden',
-			'name'        => $this->args['slug'],
-			'id'          => $this->args['slug'],
-			'placeholder' => $this->args['placeholder'],
-			'required'    => $this->args['required'],
-			'value'       => ! is_null( $this->args['value'] ) ? wp_json_encode( $this->args['value'] ) : '',
-			'data-parent' => $this->args['_unique_id'],
-		);
+		$attributes = parent::get_input_attributes();
+
+		$attributes['type']        = 'hidden';
+		$attributes['value']       = ! is_null( $this->args['value'] ) ? wp_json_encode( $this->args['value'] ) : '';
+		$attributes['data-parent'] = $this->args['_unique_id'];
 
 		return $attributes;
 	}
@@ -121,7 +129,7 @@ class Repeater extends FieldAbstract {
 		$template['repeatable_template_end']           = '</div>';
 		$template['repeatable_template_wrapper_end']   = '</div>';
 		$template['repeatable_container_start']        = '<div class="formation-repeatable-container" data-container="' . esc_attr( $this->args['_unique_id'] ) . '"></div>';
-		$template['repeatable_add_button']             = '<button type="button" class="button" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['description'] ) . '</button>';
+		$template['repeatable_add_button']             = '<button type="button" class="button-repeater" data-repeater="' . esc_attr( $this->args['_unique_id'] ) . '">' . esc_html( $this->args['description'] ) . '</button>';
 		$template['repeatable_entry_input']            = $this->render_input();
 		$template['repeatable_container_end']          = '</div>';
 

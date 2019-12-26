@@ -12,7 +12,7 @@ use Formation\Component;
 /**
  * Handles Formation's fields handling.
  */
-class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
+class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setup, Component\Assets {
 
 	/**
 	 * All fields registered.
@@ -77,6 +77,23 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
 			);
 		}
 		add_filter( 'render_block_data', array( $this, 'register_field_instance' ) );
+
+		// Check for an entry.
+		$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
+		if ( $entry_id ) {
+			$entry = get_post( $entry_id );
+			if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
+				$this->load_form( $entry->post_parent );
+				$data = json_decode( $entry->post_content, ARRAY_A );
+				foreach ( $this->instances as $instance ) {
+					$instance_name = $instance->get_input_name();
+					if ( ! empty( $data[ $instance_name ] ) ) {
+						$instance->set_value( $data[ $instance_name ] );
+					}
+				}
+			}
+
+		}
 	}
 
 	/**
@@ -85,15 +102,23 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
 	public function setup() {
 		if ( $this->plugin->components['entry']->is_submitting() ) {
 			$form_id = filter_input( INPUT_POST, $this->plugin->components['view']::FORM_ID_KEY, FILTER_SANITIZE_NUMBER_INT );
-			$form    = get_post( $form_id );
-			if ( empty( $form ) ) {
-				return new \WP_Error( 'form_404', __( 'Form not found', 'formation' ) );
-			}
-			$blocks = parse_blocks( $form->post_content );
-			if ( ! empty( $blocks ) ) {
-				$this->find_field_blocks( $blocks );
-			}
+			$this->load_form( $form_id );
 		}
+	}
+
+	public function load_form( $form_id ) {
+		$form = get_post( $form_id );
+		if ( empty( $form ) ) {
+			return new \WP_Error( 'form_404', __( 'Form not found', 'formation' ) );
+		}
+		$blocks = parse_blocks( $form->post_content );
+		if ( ! empty( $blocks ) ) {
+			$this->find_field_blocks( $blocks );
+		}
+	}
+
+	public function post_setup() {
+
 	}
 
 	private function find_field_blocks( $blocks ) {
@@ -165,8 +190,45 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Assets {
 		// TODO: Implement enqueue_assets() method.
 	}
 
+	/**
+	 * Output Fields attributes template.
+	 */
 	public function enqueue_editor_assets() {
-		// TODO: Implement enqueue_editor_assets() method.
+	}
+
+	public function get_field_block_attributes() {
+		$field_Attributes = array(
+			'label'          => array(
+				'type' => 'string',
+			),
+			'slug'           => array(
+				'type' => 'string',
+			),
+			'placeholder'    => array(
+				'type' => 'string',
+			),
+			'description'    => array(
+				'type' => 'string',
+			),
+			'required'       => array(
+				'type' => 'bool',
+			),
+			'is_repeatable'  => array(
+				'type' => 'bool',
+			),
+			'default_value'  => array(
+				'type' => 'string',
+			),
+			'has_conditions' => array(
+				'type' => 'bool',
+			),
+			'_unique_id'     => array(
+				'type' => 'string',
+
+			),
+		);
+
+		return apply_filters( 'formation_field_block_attributes', $field_Attributes, $this );
 	}
 
 	public function enqueue_front_assets() {
