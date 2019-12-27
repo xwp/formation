@@ -91,7 +91,7 @@ class Repeater extends FieldAbstract {
 
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
-		} elseif ( is_array( $value ) ) {
+		} elseif ( is_array( $value ) && ! empty( $this->fields ) ) {
 			foreach ( $value as &$item ) {
 				foreach ( $this->fields as $field ) {
 					if ( isset( $this->field->instances[ $field ] ) ) {
