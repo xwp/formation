@@ -32,6 +32,14 @@ class View implements Setup {
 	public const FORM_ID_KEY = '__form_id';
 
 	/**
+	 * Holds the key to find a entry ID in a submission.
+	 *
+	 * @var string
+	 */
+	public const ENTRY_ID_KEY = '__entry_id';
+
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @param object $plugin Instance of the plugin.

@@ -78,21 +78,25 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 		}
 		add_filter( 'render_block_data', array( $this, 'register_field_instance' ) );
 
-		// Check for an entry.
-		$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
-		if ( $entry_id ) {
-			$entry = get_post( $entry_id );
-			if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
-				$this->load_form( $entry->post_parent );
-				$data = json_decode( $entry->post_content, ARRAY_A );
-				foreach ( $this->instances as $instance ) {
-					$instance_name = $instance->get_input_name();
-					if ( ! empty( $data[ $instance_name ] ) ) {
-						$instance->set_value( $data[ $instance_name ] );
+		if ( ! $this->plugin->components['entry']->is_submitting() ) {
+			// Check for an entry.
+			$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
+			if ( $entry_id ) {
+				$entry    = get_post( $entry_id );
+				$can_load = get_current_user_id() === $entry->post_author;
+				if ( apply_filters( 'formation_load_entry', $can_load, $entry ) ) {
+					if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
+						$this->load_form( $entry->post_parent );
+						$data = json_decode( $entry->post_content, ARRAY_A );
+						foreach ( $this->instances as $instance ) {
+							$instance_name = $instance->get_input_name();
+							if ( ! empty( $data[ $instance_name ] ) ) {
+								$instance->set_value( $data[ $instance_name ] );
+							}
+						}
 					}
 				}
 			}
-
 		}
 	}
 
@@ -106,6 +110,13 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 		}
 	}
 
+	/**
+	 * Loads a form.
+	 *
+	 * @param $form_id
+	 *
+	 * @return \WP_Error
+	 */
 	public function load_form( $form_id ) {
 		$form = get_post( $form_id );
 		if ( empty( $form ) ) {

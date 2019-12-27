@@ -130,6 +130,15 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	 * Get a current submission.
 	 */
 	public function get_submission() {
+		// Add entry_ID for editing.
+		$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
+		if ( $entry_id ) {
+			$entry_post = get_post( $entry_id );
+			$can_load   = get_current_user_id() === $entry_post->post_author;
+			if ( ! apply_filters( 'formation_load_entry', $can_load, $entry_post ) ) {
+				wp_die( 'Can\'t edit this entry.' );
+			}
+		}
 		$field_instances = $this->plugin->components['field']->instances;
 		$form_id         = filter_input( INPUT_POST, $this->plugin->components['view']::FORM_ID_KEY, FILTER_SANITIZE_NUMBER_INT );
 		$referer         = filter_input( INPUT_POST, '_wp_http_referer', FILTER_DEFAULT );
@@ -156,14 +165,16 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 
 		$entry['post'] = array(
 			'post_title'   => 'entry',
-			'post_content' => wp_json_encode( $entry['data'] ),
+			'post_content' => 'pending',
 			'post_parent'  => $form_id,
 			'post_type'    => 'formation_entry',
 			'post_status'  => 'publish',
 		);
+		if ( ! empty( $entry_post ) ) {
+			$entry['post']['ID'] = $entry_post->ID;
+		}
 
-
-		return $entry;
+		return apply_filters( 'formation_capture_entry', $entry, $form );
 	}
 
 	/**
@@ -172,12 +183,17 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	 * @param array $submission The submission data to save.
 	 */
 	public function capture_entry( $submission ) {
-		$entry_id = wp_insert_post( $submission['post'] );
+		if ( ! empty( $submission['post']['ID'] ) ) {
+			$entry_id = $submission['post']['ID'];
+		} else {
+			$entry_id = wp_insert_post( $submission['post'] );
+		}
 		if ( $entry_id ) {
 			wp_update_post(
 				array(
-					'ID'         => $entry_id,
-					'post_title' => __( 'Entry' ) . ' ' . $entry_id,
+					'ID'           => $entry_id,
+					'post_title'   => __( 'Entry' ) . ' ' . $entry_id,
+					'post_content' => wp_json_encode( $submission['data'] ),
 				)
 			);
 			foreach ( $submission['data'] as $field => $entry ) {
