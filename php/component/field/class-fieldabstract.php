@@ -178,7 +178,6 @@ abstract class FieldAbstract {
 		$attributes = array(
 			'class'           => array(
 				'formation-field',
-				'formation-field-' . $this->type,
 			),
 			'data-field-type' => $this->type,
 			'data-form'       => get_queried_object_id(),
@@ -248,7 +247,7 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_submitted_value() {
-		$name = $this->get_base_name();
+		$name  = $this->get_base_name();
 		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
 		return $value;
@@ -393,12 +392,15 @@ abstract class FieldAbstract {
 
 		$attributes = array(
 			'type'        => $this->args['type'],
-			'name'        => $this->args['slug'],
-			'id'          => $this->args['slug'],
+			'name'        => $this->get_input_name(),
+			'id'          => $this->get_id(),
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
 			'value'       => $this->args['value'],
 			'data-field'  => $this->type,
+			'class'       => array(
+				'formation-field-' . $this->type,
+			),
 		);
 
 		return $attributes;

@@ -48,9 +48,11 @@ class Select extends FieldAbstract {
 	/**
 	 * Get the input template string for this fields input.
 	 *
+	 * @param int $index The index of the option.
+	 *
 	 * @return string
 	 */
-	public function get_option_template() {
+	public function get_option_template( $index ) {
 		return '<option %s>%s</option>';
 	}
 
@@ -92,7 +94,7 @@ class Select extends FieldAbstract {
 			foreach ( $options as $index => $option ) {
 				$option_atts        = $this->get_option_attributes( $option[0], $index );
 				$option_atts_string = Formation\Component\Utility\Utils::build_attributes( $option_atts );
-				$option_html[]      = sprintf( $this->get_option_template(), $option_atts_string, esc_html( $option[1] ) );
+				$option_html[]      = sprintf( $this->get_option_template( $index ), $option_atts_string, esc_html( $option[1] ) );
 			}
 		}
 		$option_html = array_filter( $option_html );

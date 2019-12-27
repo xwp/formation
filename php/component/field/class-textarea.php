@@ -29,7 +29,8 @@ class TextArea extends FieldAbstract {
 	 * @return array
 	 */
 	public function get_input_attributes() {
-		$attributes = parent::get_input_attributes();
+		$attributes         = parent::get_input_attributes();
+		$attributes['rows'] = isset( $this->args['rows'] ) ? $this->args['rows'] : 5;
 		unset( $attributes['value'] );
 
 		return $attributes;

@@ -112,7 +112,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var repeaterTemplates = {};
 var repeaterEntries = {};
-var repeaterStructs = {};
+var repeaterTriggers = {};
 var repeaterFields = {};
 var repeatable = function repeatable(element) {
   if (!element) {
@@ -125,6 +125,7 @@ var repeatable = function repeatable(element) {
 
   _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(triggers).map(function (button) {
     button.addEventListener('click', addGroup);
+    repeaterTriggers[button.dataset.repeater] = button;
   });
 
   _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(templates).map(function (template) {
@@ -140,6 +141,16 @@ var repeatable = function repeatable(element) {
   _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(repeaters).map(function (repeater) {
     repeaterFields[repeater.dataset.parent] = repeater;
     repeaterEntries[repeater.dataset.parent] = [];
+    var values = JSON.parse(repeater.value);
+
+    if (values) {
+      values.forEach(function (value) {
+        var event = new CustomEvent('click', {
+          detail: value
+        });
+        repeaterTriggers[repeater.dataset.parent].dispatchEvent(event);
+      });
+    }
   });
 };
 
@@ -167,6 +178,10 @@ var addGroup = function addGroup(event) {
     }
 
     field.name = null;
+
+    if (event.detail && event.detail[field.dataset.name]) {
+      field.value = event.detail[field.dataset.name];
+    }
   });
 
   copy.formationEntry = struct;
@@ -182,7 +197,6 @@ var addGroup = function addGroup(event) {
   elementJSON(copy, repeater);
 };
 
-repeatable();
 var elementJSON = function elementJSON(element, repeater) {
   var fields = element.querySelectorAll('[data-field]');
 
@@ -237,6 +251,8 @@ var buildEntries = function buildEntries(repeater) {
 
   repeaterFields[repeater].value = JSON.stringify(entry);
 };
+
+repeatable();
 
 /***/ }),
 

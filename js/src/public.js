@@ -8,7 +8,7 @@ import './style.scss';
 
 const repeaterTemplates = {};
 const repeaterEntries = {};
-const repeaterStructs = {};
+const repeaterTriggers = {};
 const repeaterFields = {};
 
 export const repeatable = ( element ) => {
@@ -20,6 +20,7 @@ export const repeatable = ( element ) => {
     const repeaters = element.querySelectorAll( '[data-parent]' );
     [ ...triggers ].map( ( button ) => {
         button.addEventListener( 'click', addGroup );
+        repeaterTriggers[ button.dataset.repeater ] = button;
     } );
 
     [ ...templates ].map( ( template ) => {
@@ -34,11 +35,21 @@ export const repeatable = ( element ) => {
     [ ...repeaters ].map( ( repeater ) => {
         repeaterFields[ repeater.dataset.parent ] = repeater;
         repeaterEntries[ repeater.dataset.parent ] = [];
+        const values = JSON.parse( repeater.value );
+        if ( values ) {
+            values.forEach( ( value ) => {
+                const event = new CustomEvent( 'click', {
+                    detail: value,
+                } );
+                repeaterTriggers[ repeater.dataset.parent ].dispatchEvent( event );
+            } );
+        }
     } );
 
 };
 
 const addGroup = ( event ) => {
+
     const repeater = event.target.dataset.repeater;
     const holder = document.querySelector( '[data-container="' + repeater + '"]' );
     const template = repeaterTemplates[ repeater ];
@@ -62,6 +73,9 @@ const addGroup = ( event ) => {
         }
 
         field.name = null;
+        if ( event.detail && event.detail[ field.dataset.name ] ) {
+            field.value = event.detail[ field.dataset.name ];
+        }
     } );
     copy.formationEntry = struct;
     holder.append( copy );
@@ -76,8 +90,6 @@ const addGroup = ( event ) => {
     } );
     elementJSON( copy, repeater );
 };
-
-repeatable();
 
 export const elementJSON = ( element, repeater ) => {
     const fields = element.querySelectorAll( '[data-field]' );
@@ -113,3 +125,5 @@ const buildEntries = ( repeater ) => {
     }
     repeaterFields[ repeater ].value = JSON.stringify( entry );
 };
+
+repeatable();
