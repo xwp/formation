@@ -69,7 +69,12 @@ class Checkbox extends Select {
 	 * @return array
 	 */
 	public function get_option_attributes( $option_value, $index ) {
-		$value       = $this->get_value();
+		$value = $this->get_value();
+		if ( is_array( $value ) && isset( $value[ $index ] ) ) {
+			$value = $value[ $index ];
+		} else {
+			$value = null;
+		}
 		$is_checked  = checked( $option_value, $value, false );
 		$option_atts = array(
 			'type'       => $this->type,
