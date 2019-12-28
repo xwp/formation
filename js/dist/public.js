@@ -150,6 +150,7 @@ var repeatable = function repeatable(element) {
         });
         repeaterTriggers[repeater.dataset.parent].dispatchEvent(event);
       });
+      buildEntries(repeater.dataset.parent);
     }
   });
 };
@@ -220,6 +221,7 @@ var elementJSON = function elementJSON(element, repeater) {
 
       buildEntries(repeater);
     });
+    field.dispatchEvent(new Event('input'));
   });
 };
 

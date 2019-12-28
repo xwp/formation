@@ -43,6 +43,7 @@ export const repeatable = ( element ) => {
                 } );
                 repeaterTriggers[ repeater.dataset.parent ].dispatchEvent( event );
             } );
+            buildEntries( repeater.dataset.parent );
         }
     } );
 
@@ -115,6 +116,7 @@ export const elementJSON = ( element, repeater ) => {
 
             buildEntries( repeater );
         } );
+        field.dispatchEvent( new Event('input') );
     } );
 };
 

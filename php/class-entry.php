@@ -134,7 +134,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
 		if ( $entry_id ) {
 			$entry_post = get_post( $entry_id );
-			$can_load   = get_current_user_id() === $entry_post->post_author;
+			$can_load   = get_current_user_id() === (int) $entry_post->post_author;
 			if ( ! apply_filters( 'formation_load_entry', $can_load, $entry_post ) ) {
 				wp_die( 'Can\'t edit this entry.' );
 			}
@@ -152,6 +152,10 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'invalids' => array(),
 			'referer'  => $referer,
 		);
+		// If updating.
+		if ( ! empty( $entry_post ) ) {
+			$entry['data'] = json_decode( $entry_post->post_content, ARRAY_A );
+		}
 		foreach ( $field_instances as $instance ) {
 			if ( $instance->get_args( 'is_repeatable' ) ) {
 				continue;// Repeatable fields are kept in it's container.

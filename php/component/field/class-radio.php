@@ -39,4 +39,16 @@ class Radio extends Checkbox {
 		return $this->get_args( 'slug' ) . '_' . $index;
 	}
 
+	/**
+	 * Get submitted value.
+	 *
+	 * @return mixed
+	 */
+	public function get_submitted_value() {
+
+		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
+
+		return array( $value );
+	}
+
 }

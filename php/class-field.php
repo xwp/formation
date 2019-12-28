@@ -83,7 +83,7 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 			$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
 			if ( $entry_id ) {
 				$entry    = get_post( $entry_id );
-				$can_load = get_current_user_id() === $entry->post_author;
+				$can_load = get_current_user_id() === (int) $entry->post_author;
 				if ( apply_filters( 'formation_load_entry', $can_load, $entry ) ) {
 					if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
 						$this->load_form( $entry->post_parent );
