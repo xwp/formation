@@ -203,10 +203,10 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			foreach ( $submission['data'] as $field => $entry ) {
 				update_post_meta( $entry_id, $field, $submission['data'] );
 			}
-
-
+			$submission['entry'] = get_post( $entry_id );
 			// Redirect to form.
 			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $submission['referer'] );
+			$redirect = apply_filters( 'formation_submission_redirect', $redirect, $submission );
 			wp_safe_redirect( $redirect );
 		}
 	}
