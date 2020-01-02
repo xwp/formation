@@ -192,22 +192,53 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		} else {
 			$entry_id = wp_insert_post( $submission['post'] );
 		}
-		if ( $entry_id ) {
+
+		if ( ! empty( $entry_id ) ) {
+			$previous = get_post( $entry_id );
+			$previous = json_decode( $previous->post_content, true );
+			$combined = $this->merge_entries( $previous, $submission['data'] );
+
 			wp_update_post(
 				array(
 					'ID'           => $entry_id,
 					'post_title'   => __( 'Entry' ) . ' ' . $entry_id,
-					'post_content' => wp_json_encode( $submission['data'] ),
+					'post_content' => wp_json_encode( $combined ),
 				)
 			);
+
+			// Don't use combined values here as original is already in post meta.
 			foreach ( $submission['data'] as $field => $entry ) {
+				// @TODO @cramer, is this right?
 				update_post_meta( $entry_id, $field, $submission['data'] );
 			}
 			$submission['entry'] = get_post( $entry_id );
+
 			// Redirect to form.
 			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $submission['referer'] );
 			$redirect = apply_filters( 'formation_submission_redirect', $redirect, $submission );
 			wp_safe_redirect( $redirect );
 		}
+	}
+
+	/**
+	 * Merge form entries.
+	 *
+	 * Sometimes new submission don't have previous field values so we need to merge the submissions.
+	 *
+	 * @param array $original The original submission.
+	 * @param array $current The current submission.
+	 * @return array
+	 */
+	public function merge_entries( $original, $current ) {
+
+		foreach ( $current as $key => $data ) {
+			if ( is_array( $data ) ) {
+				$original[ $key ] = $this->merge_entries( $original[ $key ], $data );
+			} else {
+				$original[ $key ] = $data;
+			}
+		}
+
+		return $original;
 	}
 }
