@@ -48,12 +48,14 @@ class Utils {
 	 * @param string $text Text to trim.
 	 * @param int    $length Characters to trim it to.
 	 * @param string $pattern A suffic to the trimmed text.
+	 * @param bool   $chop_word True will trim the middle of a word. False looks for an available space.
 	 * @return string
 	 */
-	public static function trim_text( $text, $length, $pattern = '…' ) {
+	public static function trim_text( $text, $length, $pattern = '…', $chop_word = false ) {
 		if ( strlen( $text ) > $length ) {
-			$offset = ( $length - 3 ) - strlen( $text );
-			$text   = substr( $text, 0, strrpos( $text, ' ', $offset ) ) . $pattern;
+			$offset       = ( $length - 3 ) - strlen( $text );
+			$space_offset = $chop_word ? strrpos( $text, ' ', $offset ) : false;
+			$text         = substr( $text, 0, $space_offset ? $space_offset : $offset ) . $pattern;
 		}
 		return $text;
 	}
