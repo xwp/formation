@@ -50,12 +50,20 @@ class CSV {
 		$df = fopen( 'php://output', 'w' );
 
 		$header_row = array();
-		self::flatten_keys( $header_row, $data );
+		self::flatten_keys( $header_row, $data[0] );
 		fputcsv( $df, $header_row );
 
 		foreach ( $data as $row ) {
+			$temp     = array();
 			$item_row = array();
-			self::flatten_items( $item_row, $row );
+			self::flatten_items( $temp, $row );
+			foreach ( $header_row as $header_key ) {
+				if ( array_key_exists( $header_key, $temp ) ) {
+					$item_row[ $header_key ] = $temp[ $header_key ];
+				} else {
+					$item_row[ $header_key ] = '';
+				}
+			}
 			fputcsv( $df, $item_row );
 		}
 
@@ -93,24 +101,30 @@ class CSV {
 				self::flatten_keys( $result, $item, $parent . $key . '_' );
 				continue;
 			}
-			$result[] = ltrim( $parent . $key, '1_' );
+			$result[] = rtrim( ltrim( $parent . $key, '1_' ), '_1' );
 		}
 	}
 
 	/**
 	 * Flattens hierarchical items.
 	 *
-	 * @param array $result The final result will be stored here.
-	 * @param array $array The input data.
+	 * @param array   $result The final result will be stored here.
+	 * @param array   $array The input data.
+	 * @param string  $parent Used to keep track of parent keys to construct hierarchy.
+	 * @param integer $offset Because child_1 looks better than child_0 to end users.
 	 * @return void
 	 */
-	private static function flatten_items( &$result, $array ) {
-		foreach ( $array as $item ) {
+	private static function flatten_items( &$result, $array, $parent = '', $offset = 1 ) {
+		foreach ( $array as $key => $item ) {
+			if ( 'integer' === gettype( $key ) ) {
+				$key = $key + $offset;
+			}
 			if ( is_array( $item ) ) {
-				self::flatten_items( $result, $item );
+				self::flatten_items( $result, $item, $parent . $key . '_' );
 				continue;
 			}
-			$result[] = $item;
+			$item_key            = rtrim( ltrim( $parent . $key, '1_' ), '_1' );
+			$result[ $item_key ] = $item;
 		}
 	}
 }
