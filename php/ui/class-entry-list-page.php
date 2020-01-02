@@ -219,7 +219,7 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 		$html = sprintf(
 			'<a class="button" href="%s"><span class="dashicons dashicons-media-text"></span>%s</a>',
 			esc_url_raw( $url ),
-			esc_html__( 'Download Resulst CSV', 'formation' )
+			esc_html__( 'Download Results CSV', 'formation' )
 		);
 		echo \wp_kses_post( $html );
 	}
