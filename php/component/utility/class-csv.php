@@ -97,7 +97,7 @@ class CSV {
 			if ( 'integer' === gettype( $key ) ) {
 				$key = $key + $offset;
 			}
-			if ( is_array( $item ) ) {
+			if ( is_array( $item ) && 0 < count( $item ) ) {
 				self::flatten_keys( $result, $item, $parent . $key . '_' );
 				continue;
 			}
