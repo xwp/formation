@@ -208,8 +208,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 
 			// Don't use combined values here as original is already in post meta.
 			foreach ( $submission['data'] as $field => $entry ) {
-				// @TODO @cramer, is this right?
-				update_post_meta( $entry_id, $field, $submission['data'] );
+				update_post_meta( $entry_id, $field, $entry );
 			}
 			$submission['entry'] = get_post( $entry_id );
 
