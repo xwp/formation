@@ -194,22 +194,26 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		}
 
 		if ( ! empty( $entry_id ) ) {
-			$previous = get_post( $entry_id );
-			$previous = json_decode( $previous->post_content, true );
-			$combined = $this->merge_entries( $previous, $submission['data'] );
+			$submission_data = array();
+			$previous        = get_post( $entry_id );
+			$previous        = json_decode( $previous->post_content, true );
+			if ( is_array( $previous ) ) {
+				$submission_data = $previous;
+			}
+			// Use combined here because originals may have been edited. Revision posts will have unedited original data.
+			foreach ( $submission['data'] as $field => $entry ) {
+				update_post_meta( $entry_id, $field, $entry );
+				$submission_data[ $field ] = $entry;
+			}
 
 			wp_update_post(
 				array(
 					'ID'           => $entry_id,
 					'post_title'   => __( 'Entry' ) . ' ' . $entry_id,
-					'post_content' => wp_json_encode( $combined ),
+					'post_content' => wp_json_encode( $submission_data ),
 				)
 			);
 
-			// Don't use combined values here as original is already in post meta.
-			foreach ( $submission['data'] as $field => $entry ) {
-				update_post_meta( $entry_id, $field, $entry );
-			}
 			$submission['entry'] = get_post( $entry_id );
 
 			// Redirect to form.
@@ -219,25 +223,4 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		}
 	}
 
-	/**
-	 * Merge form entries.
-	 *
-	 * Sometimes new submission don't have previous field values so we need to merge the submissions.
-	 *
-	 * @param array $original The original submission.
-	 * @param array $current The current submission.
-	 * @return array
-	 */
-	public function merge_entries( $original, $current ) {
-
-		foreach ( $current as $key => $data ) {
-			if ( is_array( $data ) ) {
-				$original[ $key ] = $this->merge_entries( $original[ $key ], $data );
-			} else {
-				$original[ $key ] = $data;
-			}
-		}
-
-		return $original;
-	}
 }

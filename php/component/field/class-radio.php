@@ -51,4 +51,15 @@ class Radio extends Checkbox {
 		return array( $value );
 	}
 
+	/**
+	 * Sanitizes the input value.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 *
+	 * @return mixed|\WP_Error
+	 */
+	public function sanitize_value( $value ) {
+
+		return sanitize_text_field( $value );
+	}
 }

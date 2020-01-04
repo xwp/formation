@@ -97,6 +97,9 @@ class Repeater extends FieldAbstract {
 					if ( isset( $this->field->instances[ $field ] ) ) {
 						$field_instance = $this->field->instances[ $field ];
 						$field_name     = $field_instance->get_base_name();
+						if ( ! isset( $item[ $field_name ] ) ) {
+							continue; // New field after entry or new options added.
+						}
 						$proposed_value = $field_instance->validate_value( $item[ $field_name ] );
 						if ( is_wp_error( $proposed_value ) ) {
 							$this->set_notice( $proposed_value->get_error_code() );
