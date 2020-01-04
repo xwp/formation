@@ -36,7 +36,8 @@
     "mini-css-extract-plugin": "^0.8.0",
     "css-loader": "^3.3.2",
     "sass-loader": "^8.0.0",
-    "node-sass": "^4.13.0"
+    "node-sass": "^4.13.0",
+    "react-select": "^3.0.8"
   },
   "dependencies": {}
 }

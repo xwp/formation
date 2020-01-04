@@ -151,6 +151,22 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 		if ( isset( $this->fields[ $block['blockName'] ] ) ) {
 			// Check the field has not already been registered.
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
+				// Check permission.
+				if ( ! empty( $block['attrs']['role_restriction'] ) ) {
+					$roles = json_decode( $block['attrs']['role_restriction'], ARRAY_A );
+					if ( ! empty( $roles ) ) {
+						$user_can = false;
+						foreach ( $roles as $role ) {
+							if ( current_user_can( $role['value'] ) ) {
+								$user_can = true;
+								break;
+							}
+						}
+						if ( false === $user_can ) {
+							return $block;
+						}
+					}
+				}
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
 				if ( $init ) {
 					$field                                               = new $init( $block['attrs'], $this->plugin, $block );
@@ -184,7 +200,7 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 	 * Render a field instance.
 	 */
 	public function render( $args, $content ) {
-		if ( $this->instances[ $args['_unique_id'] ] ) {
+		if ( isset( $this->instances[ $args['_unique_id'] ] ) ) {
 			return $this->instances[ $args['_unique_id'] ]->render( $content );
 		}
 	}

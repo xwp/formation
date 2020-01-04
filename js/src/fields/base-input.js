@@ -102,6 +102,10 @@ const BaseInput = {
         has_conditions: {
             type: 'bool',
         },
+        role_restriction: {
+            type: 'string',
+            default: null
+        },
         _unique_id: {
             type: 'string',
         },

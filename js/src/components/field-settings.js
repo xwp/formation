@@ -8,6 +8,7 @@ import {
     withFilters
 } from '@wordpress/components';
 import { getBlockType } from '@wordpress/blocks';
+import Select from 'react-select';
 
 const { __ } = window.wp.i18n;
 
@@ -18,7 +19,7 @@ const FormationFieldSettings = ( props ) => {
         placeholder,
         description,
         required,
-        is_repeatable,
+        role_restriction,
         default_value,
     } = props.attributes;
     props.setAttributes( { _unique_id: props.clientId } );
@@ -50,6 +51,8 @@ const FormationFieldSettings = ( props ) => {
             }
         }
     };
+    const handleSelectChange = ( role_restriction ) => props.setAttributes( { role_restriction: JSON.stringify( role_restriction ) } );
+
     return (
         <>
             { supports( 'label' ) &&
@@ -115,13 +118,18 @@ const FormationFieldSettings = ( props ) => {
                 checked={ required }
             />
             }
-            { supports( 'repeatable' ) &&
-            <ToggleControl
-                label={ 'Repeatable' }
-                onChange={ toggleAttribute( 'is_repeatable' ) }
-                checked={ is_repeatable }
-            />
-            }
+            <div className={ 'components-base-control' }>
+                <div className={ 'components-base-control__field' }>
+                    <label className={ 'components-base-control__label' }>{ __( 'Role Restriction' ) }</label>
+                    <Select
+                        name='select-two'
+                        value={ JSON.parse( role_restriction ) }
+                        onChange={ handleSelectChange }
+                        options={ Formation.roles }
+                        isMulti='true'
+                    />
+                </div>
+            </div>
             <SettingsComponent { ...props } />
         </>
     );

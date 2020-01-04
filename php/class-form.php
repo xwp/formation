@@ -306,6 +306,14 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 
 		$data['field_attributes'] = $this->plugin->components['field']->get_field_block_attributes();
 
+		$roles = wp_roles();
+		foreach ( $roles->roles as $role => $detail ) {
+			$data['roles'][] = array(
+				'value' => $role,
+				'label' => $detail['name'],
+			);
+		}
+
 		$script = 'var Formation = ' . wp_json_encode( $data );
 		wp_add_inline_script( 'formation-editor-js', $script );
 	}
