@@ -48,7 +48,7 @@ class Radio extends Checkbox {
 
 		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
-		return array( $value );
+		return $value;
 	}
 
 	/**
