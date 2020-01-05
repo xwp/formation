@@ -12,6 +12,23 @@
 
 
 .formation {
+	&-form {
+		p {
+			display : block;
+			width   : 100%;
+			margin  : 6px 0 6px;
+		}
+
+		h1, h2, h3, h4, h5 {
+			margin-top    : 6px;
+			margin-bottom : 12px;
+		}
+		hr{
+			margin: 12px 0;
+			width: 100%;
+		}
+	}
+
 	&-field {
 		display    : block;
 		padding    : 0.7em;
@@ -191,6 +208,7 @@
 				}
 			}
 		}
+
 		.button-repeater {
 			border         : 0;
 			background     : none;

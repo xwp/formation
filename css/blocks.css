@@ -89,6 +89,19 @@
   background-repeat: no-repeat;
   background-image: url("data:image/svg+xml,%3Csvg height='32' width='32' fill='%23009AFF' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 14H18V4a2 2 0 0 0-4 0v10H4a2 2 0 0 0 0 4h10v10a2 2 0 0 0 4 0V18h10a2 2 0 0 0 0-4z'/%3E%3C/svg%3E"); }
 
+.formation-form p {
+  display: block;
+  width: 100%;
+  margin: 6px 0 6px; }
+
+.formation-form h1, .formation-form h2, .formation-form h3, .formation-form h4, .formation-form h5 {
+  margin-top: 6px;
+  margin-bottom: 12px; }
+
+.formation-form hr {
+  margin: 12px 0;
+  width: 100%; }
+
 .formation-field {
   display: block;
   padding: 0.7em;
