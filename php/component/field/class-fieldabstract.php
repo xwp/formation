@@ -325,7 +325,11 @@ abstract class FieldAbstract {
 	 */
 	public function sanitize_value( $value ) {
 
-		$value = sanitize_text_field( $value );
+		if ( 'date' === $this->args['type'] ) {
+			$value = date( 'Y-m-d', strtotime( $value ) );
+		} else {
+			$value = sanitize_text_field( $value );
+		}
 
 		return $value;
 	}
@@ -390,13 +394,17 @@ abstract class FieldAbstract {
 	 */
 	public function get_input_attributes() {
 
+		$value = $this->args['value'];
+		if ( 'date' === $this->args['type'] ) {
+			$value = date( 'Y-m-d', strtotime( $value ) );
+		}
 		$attributes = array(
 			'type'        => $this->args['type'],
 			'name'        => $this->get_input_name(),
 			'id'          => $this->get_id(),
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
-			'value'       => $this->args['value'],
+			'value'       => $value,
 			'data-field'  => $this->type,
 			'class'       => array(
 				'formation-field-' . $this->type,

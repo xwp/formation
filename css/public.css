@@ -126,6 +126,7 @@
   .formation-field input[type=time],
   .formation-field input[type=url],
   .formation-field input[type=week],
+  .formation-field input[type=date],
   .formation-field select,
   .formation-field textarea {
     width: 100%; }
