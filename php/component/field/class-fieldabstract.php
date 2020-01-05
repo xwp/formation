@@ -395,7 +395,7 @@ abstract class FieldAbstract {
 	public function get_input_attributes() {
 
 		$value = $this->args['value'];
-		if ( 'date' === $this->args['type'] ) {
+		if ( ! empty( $value ) && 'date' === $this->args['type'] ) {
 			$value = date( 'Y-m-d', strtotime( $value ) );
 		}
 		$attributes = array(
