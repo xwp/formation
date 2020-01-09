@@ -493,17 +493,98 @@ var getFieldBlocks = function getFieldBlocks() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _fields__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fields */ "./js/src/fields/index.js");
-/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editor.scss */ "./js/src/editor.scss");
-/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_editor_scss__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _fields__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./fields */ "./js/src/fields/index.js");
+/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor.scss */ "./js/src/editor.scss");
+/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_editor_scss__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__);
+
+
+
+
 /**
  * Form Editor field (Blocks) importer and register.
  *
  * @package Formation
  */
+var __ = window.wp.i18n.__;
 
 
-Object(_fields__WEBPACK_IMPORTED_MODULE_0__["registerFields"])();
+Object(_fields__WEBPACK_IMPORTED_MODULE_3__["registerFields"])();
+var registerPlugin = wp.plugins.registerPlugin;
+var PluginDocumentSettingPanel = wp.editPost.PluginDocumentSettingPanel;
+
+var _wp$data = wp.data,
+    withSelect = _wp$data.withSelect,
+    withDispatch = _wp$data.withDispatch;
+var PostsDropdownControl = wp.compose.compose( // withDispatch allows to save the selected post ID into post meta
+withDispatch(function (dispatch, props) {
+  return {
+    setMetaValue: function setMetaValue(metaValue) {
+      dispatch('core/editor').editPost({
+        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, props.metaKey, metaValue)
+      });
+    }
+  };
+}), // withSelect allows to get posts for our SelectControl and also to get the
+// post meta value
+withSelect(function (select, props) {
+  return {
+    posts: select('core').getEntityRecords('postType', 'page'),
+    metaValue: select('core/editor').getEditedPostAttribute('meta')[props.metaKey]
+  };
+}))(function (props) {
+  // options for SelectControl
+  var options = []; // if posts found
+
+  if (props.posts) {
+    options.push({
+      value: 0,
+      label: 'No redirection'
+    });
+    props.posts.forEach(function (post) {
+      // simple foreach loop
+      options.push({
+        value: post.id,
+        label: post.title.rendered
+      });
+    });
+  } else {
+    options.push({
+      value: 0,
+      label: 'Loading...'
+    });
+  }
+
+  return wp.element.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__["SelectControl"], {
+    label: __('Select page to redirect to after submit'),
+    options: options,
+    onChange: function onChange(content) {
+      props.setMetaValue(content);
+    },
+    value: props.metaValue
+  });
+}); // Our custom sidebar
+
+registerPlugin('redirect-sidebar', {
+  render: function render() {
+    return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(PluginDocumentSettingPanel, {
+      name: "form-redirect",
+      title: __('Redirection'),
+      icon: "redo"
+    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
+      className: "plugin-sidebar-content"
+    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(PostsDropdownControl, {
+      metaKey: "redirect"
+    })));
+  }
+});
 
 /***/ }),
 

@@ -151,6 +151,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			'data'     => array(),
 			'invalids' => array(),
 			'referer'  => $referer,
+			'form'     => $form,
 		);
 		// If updating.
 		if ( ! empty( $entry_post ) ) {
@@ -216,8 +217,15 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 
 			$submission['entry'] = get_post( $entry_id );
 
+			// Get redirection.
+			$redirect_page = get_post_meta( $submission['form']->ID, 'redirect', true );
+			if ( ! empty( $redirect_page ) ) {
+				$redirect = get_permalink( $redirect_page );
+			} else {
+				$redirect = $submission['referer'];
+			}
 			// Redirect to form.
-			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $submission['referer'] );
+			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $redirect );
 			$redirect = apply_filters( 'formation_submission_redirect', $redirect, $submission );
 			wp_safe_redirect( $redirect );
 		}

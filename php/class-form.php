@@ -66,6 +66,13 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 * @since  0.1
 	 */
 	public function setup() {
+
+		register_meta( 'post', 'redirect', [
+			'show_in_rest' => true,
+			'single'       => true,
+			'type'         => 'string',
+		] );
+
 		//add_filter( 'allowed_block_types', array( $this, 'block_types' ), 10, 2 );
 		add_filter( 'block_categories', array( $this, 'block_category' ), 10, 2 );
 		register_block_type(
