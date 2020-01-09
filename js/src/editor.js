@@ -8,7 +8,7 @@ import { registerFields } from './fields';
 
 const { registerPlugin } = wp.plugins;
 const { PluginDocumentSettingPanel } = wp.editPost;
-import { SelectControl } from '@wordpress/components';
+import { TextControl } from '@wordpress/components';
 
 const { withSelect, withDispatch } = wp.data;
 
@@ -34,24 +34,10 @@ const PostsDropdownControl = wp.compose.compose(
         };
     } ) )( function( props ) {
 
-        // options for SelectControl
-        var options = [];
 
-        // if posts found.
-        if ( props.posts ) {
-            options.push( { value: 0, label: 'No redirection' } );
-            props.posts.forEach( ( post ) => { // simple foreach loop
-                options.push( { value: post.id, label: post.title.rendered } );
-            } );
-        }
-        else {
-            options.push( { value: 0, label: 'Loading...' } );
-        }
-
-        return wp.element.createElement( SelectControl,
+        return wp.element.createElement( TextControl,
             {
-                label: __( 'Select page to redirect to after submit' ),
-                options: options,
+                label: __( 'Enter URL to redirect to after submit.' ),
                 onChange: function( content ) {
                     props.setMetaValue( content );
                 },

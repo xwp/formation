@@ -220,7 +220,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			// Get redirection.
 			$redirect_page = get_post_meta( $submission['form']->ID, 'redirect', true );
 			if ( ! empty( $redirect_page ) ) {
-				$redirect = get_permalink( $redirect_page );
+				$redirect = $redirect_page;
 			} else {
 				$redirect = $submission['referer'];
 			}
