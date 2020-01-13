@@ -15,6 +15,7 @@ const { __ } = window.wp.i18n;
 const FormationFieldSettings = ( props ) => {
     const {
         label,
+        show_label,
         slug,
         placeholder,
         description,
@@ -22,6 +23,7 @@ const FormationFieldSettings = ( props ) => {
         role_restriction,
         default_value,
     } = props.attributes;
+
     props.setAttributes( { _unique_id: props.clientId } );
     const blockType = getBlockType( props.name );
     const SettingsComponent = blockType.settings;
@@ -56,19 +58,30 @@ const FormationFieldSettings = ( props ) => {
     return (
         <>
             { supports( 'label' ) &&
-            <TextControl
-                label={ __( 'Label' ) }
-                value={ label }
-                onChange={ ( value ) => {
-                    props.setAttributes( {
-                        label: value,
-                    } );
-                    setLabel( value );
-                } }
-            />
+            <>
+                <TextControl
+                    label={ __( 'Label' ) }
+                    required={ 'required' }
+                    value={ label }
+                    autoFocus={ true }
+                    help={ label ? '' : __('A label is required.') }
+                    onChange={ ( value ) => {
+                        props.setAttributes( {
+                            label: value,
+                        } );
+                        setLabel( value );
+                    } }
+                />
+                <ToggleControl
+                    label={ 'Show Label' }
+                    onChange={ toggleAttribute( 'show_label' ) }
+                    checked={ show_label }
+                />
+            </>
             }
             { supports( 'slug' ) &&
             <TextControl
+                required={ 'required' }
                 label={ __( 'Slug' ) }
                 value={ slug }
                 onChange={ ( value ) => {

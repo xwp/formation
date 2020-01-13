@@ -14,17 +14,19 @@ import FormationFieldExtensions from '../components/field-extentions';
 const LabelField = ( props ) => {
     const {
         label,
+        show_label,
         slug,
         required,
     } = props.attributes;
     return (
-        <>
-            <label for={ slug }>
-                { label }
-                { required &&
-                <span className={ 'required' }>*</span>
-                }
-            </label>
+        <> { show_label &&
+        <label for={ slug }>
+            { label }
+            { required &&
+            <span className={ 'required' }>*</span>
+            }
+        </label>
+        }
         </>
     );
 };
@@ -81,6 +83,10 @@ const BaseInput = {
         label: {
             type: 'string',
         },
+        show_label: {
+            type: 'bool',
+            default: true,
+        },
         slug: {
             type: 'string',
         },
@@ -116,9 +122,14 @@ const BaseInput = {
     extension: ( props ) => ( <></> ),
     description: DescriptionField,
     edit: ( props ) => {
+
         const {
-            _unique_id
+            _unique_id,
+            slug,
         } = props.attributes;
+        if ( ( ! slug || slug.length === 0 ) && !props.isSelected ) {
+            wp.data.dispatch('core/block-editor').selectBlock( _unique_id );
+        }
 
         // Set only if one is not set. moving/reloading creates a new one. lets
         // keep the first one created.
