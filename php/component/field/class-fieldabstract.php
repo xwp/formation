@@ -326,7 +326,7 @@ abstract class FieldAbstract {
 	public function sanitize_value( $value ) {
 
 		if ( 'date' === $this->args['type'] ) {
-			$value = date( 'Y-m-d', strtotime( $value ) );
+			$value = gmdate( 'Y-m-d', strtotime( $value ) );
 		} else {
 			$value = sanitize_text_field( $value );
 		}
@@ -396,7 +396,7 @@ abstract class FieldAbstract {
 
 		$value = $this->args['value'];
 		if ( ! empty( $value ) && 'date' === $this->args['type'] ) {
-			$value = date( 'Y-m-d', strtotime( $value ) );
+			$value = gmdate( 'Y-m-d', strtotime( $value ) );
 		}
 		$attributes = array(
 			'type'        => $this->args['type'],
