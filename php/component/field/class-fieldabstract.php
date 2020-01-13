@@ -10,6 +10,7 @@ namespace Formation\Component\Field;
 use Formation;
 use Formation\Plugin;
 use Formation\Component;
+use Formation\Component\Utility\Utils;
 
 /**
  * Class FieldAbstract
@@ -326,7 +327,7 @@ abstract class FieldAbstract {
 	public function sanitize_value( $value ) {
 
 		if ( 'date' === $this->args['type'] ) {
-			$value = gmdate( 'Y-m-d', strtotime( $value ) );
+			$value = Utils::date( 'Y-m-d', Utils::gmstrtotime( $value ) );
 		} else {
 			$value = sanitize_text_field( $value );
 		}
@@ -396,7 +397,7 @@ abstract class FieldAbstract {
 
 		$value = $this->args['value'];
 		if ( ! empty( $value ) && 'date' === $this->args['type'] ) {
-			$value = gmdate( 'Y-m-d', strtotime( $value ) );
+			$value = Utils::date( 'Y-m-d', Utils::gmstrtotime( $value ) );
 		}
 		$attributes = array(
 			'type'        => $this->args['type'],

@@ -60,4 +60,58 @@ class Utils {
 		return $text;
 	}
 
+	/**
+	 * Converts string to time with timezone offset.
+	 *
+	 * @see https://mediarealm.com.au/articles/wordpress-timezones-strtotime-date-functions/
+	 *
+	 * @param string $str String to convert to time.
+	 * @return time|Exception
+	 */
+	public static function gmstrtotime( $str ) {
+		$tz_string = get_option( 'timezone_string' );
+		$tz_offset = get_option( 'gmt_offset', 0 );
+		if ( ! empty( $tz_string ) ) {
+			$timezone = $tz_string;
+		} elseif ( 0 === $tz_offset ) {
+			$timezone = 'UTC';
+		} else {
+			$timezone = $tz_offset;
+			if ( substr( $tz_offset, 0, 1 ) !== '-' && substr( $tz_offset, 0, 1 ) !== '+' && substr( $tz_offset, 0, 1 ) !== 'U' ) {
+				$timezone = '+' . $tz_offset;
+			}
+		}
+		$datetime = new \DateTime( $str, new \DateTimeZone( $timezone ) );
+		return $datetime->format( 'U' );
+	}
+
+	/**
+	 * Get a localized WP date.
+	 *
+	 * @param string $format The date format.
+	 * @param int    $timestamp The timestamp.
+	 * @return \DateTime|erro
+	 */
+	public static function date( $format, $timestamp = null ) {
+		$tz_string = get_option( 'timezone_string' );
+		$tz_offset = get_option( 'gmt_offset', 0 );
+		if ( ! empty( $tz_string ) ) {
+			$timezone = $tz_string;
+		} elseif ( 0 === $tz_offset ) {
+			$timezone = 'UTC';
+		} else {
+			$timezone = $tz_offset;
+			if ( substr( $tz_offset, 0, 1 ) !== '-' && substr( $tz_offset, 0, 1 ) !== '+' && substr( $tz_offset, 0, 1 ) !== 'U' ) {
+				$timezone = '+' . $tz_offset;
+			}
+		}
+		if ( null === $timestamp ) {
+			$timestamp = time();
+		}
+		$datetime = new \DateTime();
+		$datetime->setTimestamp( $timestamp );
+		$datetime->setTimezone( new \DateTimeZone( $timezone ) );
+		return $datetime->format( $format );
+	}
+
 }
