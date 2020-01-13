@@ -115,6 +115,9 @@ const BaseInput = {
         _unique_id: {
             type: 'string',
         },
+        has_error: {
+            type: 'string',
+        }
     },
     label: LabelField,
     input: InputField,
@@ -125,10 +128,19 @@ const BaseInput = {
 
         const {
             _unique_id,
-            slug,
+            label,
+            has_error,
         } = props.attributes;
-        if ( ( ! slug || slug.length === 0 ) && !props.isSelected ) {
-            wp.data.dispatch('core/block-editor').selectBlock( _unique_id );
+
+        if(  !props.isSelected ) {
+            // check for a slug.
+            if ( ( !label || label.length === 0 ) ) {
+                wp.data.dispatch( 'core/block-editor' ).selectBlock( _unique_id );
+            } else {
+                // check slug isn't used.
+
+            }
+
         }
 
         // Set only if one is not set. moving/reloading creates a new one. lets
@@ -147,7 +159,7 @@ const BaseInput = {
                 </InspectorControls>
 
                 <div
-                    className={ props.className + ' formation-editor-input' }
+                    className={ props.className + ' formation-editor-input ' + ( has_error ? 'has_error' : '' ) }
                     id={ 'field_' + _unique_id }
                 >
                     <FormationFieldInput { ...props } />

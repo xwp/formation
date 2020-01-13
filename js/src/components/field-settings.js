@@ -22,6 +22,8 @@ const FormationFieldSettings = ( props ) => {
         required,
         role_restriction,
         default_value,
+        _unique_id,
+        has_error,
     } = props.attributes;
 
     props.setAttributes( { _unique_id: props.clientId } );
@@ -54,7 +56,22 @@ const FormationFieldSettings = ( props ) => {
         }
     };
     const handleSelectChange = ( role_restriction ) => props.setAttributes( { role_restriction: JSON.stringify( role_restriction ) } );
+    const blocks = wp.data.select( 'core/block-editor' ).getBlocks();
+    const checkSlug = ( value ) => {
+        for ( const block of blocks ) {
+            if ( _unique_id === block.clientId ) {
+                continue;
+            }
+            if ( block.attributes.slug && block.attributes.slug === value ) {
+                props.setAttributes( { has_error: __( 'Slug already in use' ) } );
+            }
+            else {
+                props.setAttributes( { has_error: false } );
+            }
+        }
+    };
 
+    checkSlug( slug );
     return (
         <>
             { supports( 'label' ) &&
@@ -63,8 +80,8 @@ const FormationFieldSettings = ( props ) => {
                     label={ __( 'Label' ) }
                     required={ 'required' }
                     value={ label }
-                    autoFocus={ true }
-                    help={ label ? '' : __('A label is required.') }
+                    autoFocus={ !label }
+                    help={ label ? '' : __( 'A label is required.' ) }
                     onChange={ ( value ) => {
                         props.setAttributes( {
                             label: value,
@@ -81,19 +98,23 @@ const FormationFieldSettings = ( props ) => {
             }
             { supports( 'slug' ) &&
             <TextControl
-                required={ 'required' }
+                required={ true }
                 label={ __( 'Slug' ) }
                 value={ slug }
+                help={ has_error }
+                className={ has_error ? 'has_error' : '' }
                 onChange={ ( value ) => {
                     props.setAttributes( {
-                        slug: value,
+                        slug: value.toLowerCase(),
                     } );
                     if ( value.length <= 0 ) {
                         setLabel( label );
                     }
                 } }
                 onBlur={ () => {
-                    setLabel( label );
+                    if( slug.length === 0 ) {
+                        setLabel( label );
+                    }
                 } }
             />
             }

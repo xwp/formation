@@ -4,8 +4,8 @@
  * CSS for just Backend enqueued after style.scss
  * which makes it higher in priority.
  */
-
- @import './styles/form-list-table.scss';
+@import './styles/form-list-table.scss';
+@import './variables';
 
 .editor-styles-wrapper {
 	.formation-editor-input {
@@ -29,11 +29,27 @@
 		.description {
 			font-size : 0.8em;
 		}
+
+		&.has_error {
+			color : $red;
+		}
+
 	}
 
-	.formation-repeater{
-		padding: 4px;
+	.formation-repeater {
+		padding       : 4px;
 		margin-bottom : 6px;
-		border-bottom: 1px solid #777;
+		border-bottom : 1px solid #777;
+	}
+}
+
+.components-base-control.has_error {
+	color : $red;
+
+	input, input:focus {
+		color        : $red;
+		border-color : $red;
+		box-shadow   : 0 0 0 1px $red;
+		outline      : 2px solid transparent;
 	}
 }

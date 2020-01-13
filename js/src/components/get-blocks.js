@@ -19,7 +19,7 @@ const getInnerBlocks = ( block, types ) => {
 };
 
 export const getFieldBlocks = ( types = null ) => {
-    const blocks = select( 'core/editor' ).getBlocks();
+    const blocks = select( 'core/block-editor' ).getBlocks();
     let found = [];
     if ( null === types ) {
         types = FieldNames;
