@@ -227,7 +227,9 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			// Redirect to form.
 			$redirect = add_query_arg( array( 'entry_id' => $entry_id ), $redirect );
 			$redirect = apply_filters( 'formation_submission_redirect', $redirect, $submission );
-			wp_safe_redirect( $redirect );
+			if ( wp_safe_redirect( $redirect ) ) {
+				exit;
+			}
 		}
 	}
 
