@@ -275,7 +275,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		if ( true === $clean ) {
 			$type = 'formation_entry_clean';
 		}
-		$entry = get_post( $entry_id, OBJECT, 'formation_entry' );
+		$entry = get_post( $entry_id, OBJECT, $type );
 		if ( ! is_array( $entry->post_content ) ) {
 			$return = new \WP_Error( 'invalid_entry', __( 'Invalid Entry ID', 'formation' ) );
 		} else {
