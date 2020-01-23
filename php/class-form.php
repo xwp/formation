@@ -95,11 +95,13 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 
 		if ( ! empty( $atts['form_id'] ) ) {
 			$form = get_post( $atts['form_id'] );
-			if ( $atts['show_title'] ) {
-				$content .= '<h3>' . $form->post_title . '</h3>';
+			if ( ! empty( $form ) ) {
+				if ( $atts['show_title'] ) {
+					$content .= '<h3>' . $form->post_title . '</h3>';
+				}
+				$content .= $form->post_content;
+				$content = $this->plugin->components['view']->wrap_form( do_blocks( $content ), $form );
 			}
-			$content .= $form->post_content;
-			$content = $this->plugin->components['view']->wrap_form( do_blocks( $content ), $form );
 		}
 
 		return $content;
