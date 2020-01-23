@@ -36,6 +36,29 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
+		add_filter( 'post_content', array( $this, 'extract_entry_data' ), 10, 3 );
+	}
+
+	/**
+	 * Extracts an entry's field data.
+	 *
+	 * @param string $value   The post content to filter.
+	 * @param int    $post_id The post ID.
+	 * @param string $context , the context.
+	 *
+	 * @return mixed
+	 */
+	public function extract_entry_data( $value, $post_id, $context ) {
+
+		// Compiled entry (post_content only).
+		if ( 'formation_entry' === $context ) {
+			$value = json_decode( $value, ARRAY_A );
+		} elseif ( 'formation_entry_clean' === $context ) {
+			// Get a clean, unaltered entry from meta.
+			$value = get_post_meta( $post_id, '__formation_entry_clean', true );
+		}
+
+		return $value;
 	}
 
 	/**
@@ -133,7 +156,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		// Add entry_ID for editing.
 		$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
 		if ( $entry_id ) {
-			$entry_post = get_post( $entry_id );
+			$entry_post = $this->get_entry( $entry_id );
 			$can_load   = get_current_user_id() === (int) $entry_post->post_author;
 			if ( ! apply_filters( 'formation_load_entry', $can_load, $entry_post ) ) {
 				wp_die( 'Can\'t edit this entry.' );
@@ -155,7 +178,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		);
 		// If updating.
 		if ( ! empty( $entry_post ) ) {
-			$entry['data'] = json_decode( $entry_post->post_content, ARRAY_A );
+			$entry['data'] = $entry_post->post_content;
 		}
 		foreach ( $field_instances as $instance ) {
 			if ( $instance->get_args( 'is_repeatable' ) ) {
@@ -179,7 +202,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			$entry['post']['ID'] = $entry_post->ID;
 		}
 
-		return apply_filters( 'formation_capture_entry', $entry, $form );
+		return apply_filters( 'pre_formation_capture_entry', $entry, $form );
 	}
 
 	/**
@@ -197,7 +220,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		if ( ! empty( $entry_id ) ) {
 			$submission_data = array();
 			$previous        = get_post( $entry_id );
-			$previous        = json_decode( $previous->post_content, true );
+			$previous        = $previous->post_content;
 			if ( is_array( $previous ) ) {
 				$submission_data = $previous;
 			}
@@ -207,15 +230,20 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 				$submission_data[ $field ] = $entry;
 			}
 
+			// Pre-slash JSON string to allow slashed content in post_content.
+			$data = wp_slash( wp_json_encode( $submission_data ) );
 			wp_update_post(
 				array(
 					'ID'           => $entry_id,
 					'post_title'   => __( 'Entry' ) . ' ' . $entry_id,
-					'post_content' => wp_json_encode( $submission_data ),
+					'post_content' => $data,
 				)
 			);
 
-			$submission['entry'] = get_post( $entry_id );
+			// Save a clean version of the entry (the_content unfiltered).
+			update_post_meta( $entry_id, '__formation_entry_clean', $submission_data );
+
+			$submission['entry'] = $this->get_entry( $entry_id, true );
 
 			// Get redirection.
 			$redirect_page = get_post_meta( $submission['form']->ID, 'redirect', true );
@@ -233,4 +261,27 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		}
 	}
 
+
+	/**
+	 * Get an entry by ID.
+	 *
+	 * @param int  $entry_id Entry post ID.
+	 * @param bool $clean    Flag to get a clean version (metadata) or filtered (post_content).
+	 *
+	 * @return \WP_Post|\WP_Error
+	 */
+	public function get_entry( $entry_id, $clean = false ) {
+		$type = 'formation_entry';
+		if ( true === $clean ) {
+			$type = 'formation_entry_clean';
+		}
+		$entry = get_post( $entry_id, OBJECT, 'formation_entry' );
+		if ( ! is_array( $entry->post_content ) ) {
+			$return = new \WP_Error( 'invalid_entry', __( 'Invalid Entry ID', 'formation' ) );
+		} else {
+			$return = $entry;
+		}
+
+		return $return;
+	}
 }

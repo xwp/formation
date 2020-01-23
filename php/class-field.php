@@ -82,16 +82,18 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 			// Check for an entry.
 			$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
 			if ( $entry_id ) {
-				$entry    = get_post( $entry_id );
-				$can_load = get_current_user_id() === (int) $entry->post_author;
-				if ( apply_filters( 'formation_load_entry', $can_load, $entry ) ) {
-					if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
-						$this->load_form( $entry->post_parent );
-						$data = json_decode( $entry->post_content, ARRAY_A );
-						foreach ( $this->instances as $instance ) {
-							$instance_name = $instance->get_input_name();
-							if ( ! empty( $data[ $instance_name ] ) ) {
-								$instance->set_value( $data[ $instance_name ] );
+				$entry = $this->plugin->components['entry']->get_entry( $entry_id );
+				if ( ! is_wp_error( $entry ) ) {
+					$can_load = get_current_user_id() === (int) $entry->post_author;
+					if ( apply_filters( 'formation_load_entry', $can_load, $entry ) ) {
+						if ( $this->plugin->components['entry']::$slug === $entry->post_type ) {
+							$this->load_form( $entry->post_parent );
+							$data = $entry->post_content;
+							foreach ( $this->instances as $instance ) {
+								$instance_name = $instance->get_input_name();
+								if ( ! empty( $data[ $instance_name ] ) ) {
+									$instance->set_value( $data[ $instance_name ] );
+								}
 							}
 						}
 					}
@@ -115,7 +117,7 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 	 *
 	 * @param $form_id
 	 *
-	 * @return \WP_Error
+	 * @return \WP_Post|\WP_Error
 	 */
 	public function load_form( $form_id ) {
 		$form = get_post( $form_id );
@@ -126,6 +128,8 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 		if ( ! empty( $blocks ) ) {
 			$this->find_field_blocks( $blocks );
 		}
+
+		return $form;
 	}
 
 	public function post_setup() {
@@ -135,10 +139,15 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 	private function find_field_blocks( $blocks ) {
 
 		foreach ( $blocks as $block ) {
-			$this->register_field_instance( $block );
-			// Process innerBlocks.
-			if ( ! empty( $block['innerBlocks'] ) ) {
-				$this->find_field_blocks( $block['innerBlocks'] );
+			// Check for core reusable.
+			if ( 'core/block' === $block['blockName'] ) {
+				$this->load_form( $block['attrs']['ref'] );
+			} else {
+				$this->register_field_instance( $block );
+				// Process innerBlocks.
+				if ( ! empty( $block['innerBlocks'] ) ) {
+					$this->find_field_blocks( $block['innerBlocks'] );
+				}
 			}
 		}
 	}
