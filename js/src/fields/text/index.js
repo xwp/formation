@@ -7,6 +7,7 @@ const field = {
     ...BaseInput,
     name: 'formation/text',
     title: __( 'Text Input' ),
+    description: __( 'Single line text input.' ),
     attributes: {
         ...BaseInput.attributes,
         type: {

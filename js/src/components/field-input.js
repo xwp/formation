@@ -6,10 +6,10 @@ import { withFilters } from '@wordpress/components';
 import { getBlockType } from '@wordpress/blocks';
 
 const FormationFieldInput = ( props ) => {
-    const { label, input, description } = getBlockType( props.name );
+    const { label, input, descriptionField } = getBlockType( props.name );
     const LabelComponent = label;
     const InputComponent = input;
-    const DescriptionComponent = description;
+    const DescriptionComponent = descriptionField;
     return (
         <>
             <LabelComponent { ...props } />

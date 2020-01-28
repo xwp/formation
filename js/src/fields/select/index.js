@@ -6,8 +6,14 @@ const field = {
     ...BaseInput,
     name: 'formation/select',
     title: __( 'Select' ),
+    description: __( 'Select/Dropdown field.' ),
     category: 'fields',
-    icon: 'forms',
+    example: {
+        attributes: {
+            ...BaseInput.example.attributes,
+            label: __('Select'),
+        },
+    },
     keywords: [
         __( 'Field' ),
         __( 'Form' ),

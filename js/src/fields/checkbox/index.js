@@ -7,8 +7,15 @@ const field = {
     ...BaseInput,
     name: 'formation/checkbox',
     title: __( 'Checkbox' ),
+    description: __( 'Checkbox input selection.' ),
     category: 'fields',
-    icon: 'forms',
+    example: {
+        attributes: {
+            ...BaseInput.example.attributes,
+            label: __('Checkbox'),
+            options: "Option 1\nOption 2\nOption 3\nOption 4",
+        },
+    },
     keywords: [
         __( 'Field' ),
         __( 'Form' ),
