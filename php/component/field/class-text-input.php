@@ -30,32 +30,27 @@ class Text_Input extends FieldAbstract {
 	 */
 	public function render( $content = null ) {
 
-		$html = array();
+		if ( 'hidden' !== $this->args['type'] ) {
+			// Use the base render.
+			return parent::render( $content );
+		} else {
+			$html = array();
 
-		$attributes = array(
-			'class'           => array(
-				'formation-field',
-			),
-			'data-field-type' => $this->type,
-			'data-form'       => get_queried_object_id(),
-		);
+			$attributes = array(
+				'class'           => array(
+					'formation-field',
+				),
+				'data-field-type' => $this->type,
+				'data-form'       => get_queried_object_id(),
+			);
 
-		$attribute_string = $this->build_attribute_string( $attributes, 'field_wrapper' );
+			$attribute_string = $this->build_attribute_string( $attributes, 'field_wrapper' );
 
-		if ( 'hidden' === $this->args['type'] ) {
+
 			// For the hidden type.
 			$html['opening_wrapper'] = sprintf( '<span %s>', $attribute_string );
 			$html['input']           = $this->render_input();
 			$html['close_wrapper']   = '</span>';
-		} else {
-			// Other visible types.
-			$html['opening_wrapper'] = sprintf( '<div %s>', $attribute_string );
-			$html['label']           = $this->render_label();
-			$html['required']        = $this->render_required();
-			$html['input']           = $this->render_input();
-			$html['description']     = $this->render_description();
-			$html['notice']          = $this->render_notice();
-			$html['close_wrapper']   = '</div>';
 		}
 		$html = apply_filters( 'formation_field_structure', $html );
 		$html = apply_filters( 'formation_field_structure_' . $this->type, $html );
