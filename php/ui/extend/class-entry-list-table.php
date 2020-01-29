@@ -506,7 +506,10 @@ class Entry_List_Table  extends \WP_List_Table {
 		$children = new \WP_Query( $query );
 
 		foreach ( $children->posts as $post ) {
-			$download_items[] = json_decode( $post->post_content, true );
+			$item                   = json_decode( $post->post_content, true );
+			$item['_entry_id']      = $post->ID;
+			$item['_entry_created'] = $post->post_date_gmt;
+			$download_items[]       = $item;
 		}
 
 		return $download_items;
