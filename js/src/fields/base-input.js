@@ -129,7 +129,20 @@ const BaseInput = {
         },
         has_error: {
             type: 'string',
-        }
+        },
+        condition_action : {
+            type: 'string',
+            default : 'show',
+        },
+        condition_field : {
+            type: 'string',
+        },
+        condition_compare : {
+            type: 'string',
+        },
+        condition_value : {
+            type: 'string',
+        },
     },
     label: LabelField,
     input: InputField,

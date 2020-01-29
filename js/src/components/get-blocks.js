@@ -18,9 +18,9 @@ const getInnerBlocks = ( block, types ) => {
     return found;
 };
 
-export const getFieldBlocks = ( types = null ) => {
+export const getFieldBlocks = ( types = null, exclude = null ) => {
     const blocks = select( 'core/block-editor' ).getBlocks();
-    let found = [];
+    let found = [{}];
     if ( null === types ) {
         types = FieldNames;
     }
@@ -28,8 +28,12 @@ export const getFieldBlocks = ( types = null ) => {
         types = types.split( ',' );
     }
     for ( const block of blocks ) {
-        if ( types.indexOf( block.name ) >= 0 ) {
-            found.push( block );
+        if ( types.indexOf( block.name ) >= 0 && block.attributes.slug !== exclude ) {
+
+            found.push( {
+                value: block.attributes.slug,
+                label: block.attributes.label
+            } );
         }
         if ( block.innerBlocks.length ) {
             let inners = getInnerBlocks( block, types );
