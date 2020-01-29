@@ -6,6 +6,12 @@ const field = {
     ...BaseInput,
     name: 'formation/button',
     title: __( 'Button' ),
+    description: __( 'Input button for user interactions.' ),
+    example: {
+        attributes: {
+            label: __('Next Page'),
+        },
+    },
     supports: [
         'label'
     ],

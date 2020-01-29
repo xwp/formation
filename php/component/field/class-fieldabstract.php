@@ -174,16 +174,8 @@ abstract class FieldAbstract {
 	 */
 	public function render( $content = null ) {
 
-		$html = array();
-
-		$attributes = array(
-			'class'           => array(
-				'formation-field',
-			),
-			'data-field-type' => $this->type,
-			'data-form'       => get_queried_object_id(),
-		);
-
+		$html                    = array();
+		$attributes              = $this->get_wrapper_attributes();
 		$attribute_string        = $this->build_attribute_string( $attributes, 'field_wrapper' );
 		$html['opening_wrapper'] = sprintf( '<div %s>', $attribute_string );
 		$html['label']           = $this->render_label();
@@ -386,6 +378,34 @@ abstract class FieldAbstract {
 		foreach ( $args as $arg => $value ) {
 			$this->args[ $arg ] = $value;
 		}
+	}
+
+	/**
+	 * Get the attributes for this fields wrapper tag.
+	 *
+	 * @return array
+	 */
+	public function get_wrapper_attributes() {
+
+		$attributes = array(
+			'class'           => array(
+				'formation-field',
+			),
+			'data-field-type' => $this->type,
+			'data-form'       => get_queried_object_id(),
+		);
+
+		if ( ! empty( $this->args['has_conditions'] ) ) {
+			$condition                    = array(
+				'action'  => ! empty( $this->args['condition_action'] ) ? $this->args['condition_action'] : 'show',
+				'field'   => $this->args['condition_field'],
+				'compare' => ! empty( $this->args['condition_compare'] ) ? $this->args['condition_compare'] : 'equal',
+				'value'   => $this->args['condition_value'],
+			);
+			$attributes['data-condition'] = wp_json_encode( $condition );
+		}
+
+		return $attributes;
 	}
 
 	/**

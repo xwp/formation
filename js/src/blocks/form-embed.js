@@ -5,7 +5,9 @@ import {
     TextControl,
     PanelBody
 } from '@wordpress/components';
-const {Fragment} = wp.element;
+import { embedIcon } from '../components/icons';
+
+const { Fragment } = wp.element;
 const { InspectorControls } = wp.editor;
 
 const { __ } = window.wp.i18n;
@@ -14,7 +16,7 @@ const FormEmbed = () => {
     return {
         title: __( 'Embed Form' ),
         category: 'common',
-        icon: 'forms',
+        icon: embedIcon,
         keywords: [
             __( 'Form' ),
             __( 'Embed' )
@@ -32,35 +34,38 @@ const FormEmbed = () => {
                 show_title,
                 form_id
             } = props.attributes;
-
+            const convertFormId = ( id ) => {
+                for ( const form of Formation.forms ) {
+                    if ( form.value === id ) {
+                        return form.label;
+                    }
+                }
+                return __( 'No form selected, or form removed.' );
+            };
             return (
                 <Fragment>
                     <InspectorControls>
-                        <PanelBody title={__( 'Form Settings' )}>
-                        <ToggleControl
-                            label={ __( 'Show Form Title' ) }
-                            onChange={ ( value ) => props.setAttributes( {
-                                show_title: value,
-                            } ) }
-                            checked={ show_title }
-                        />
+                        <PanelBody title={ __( 'Form Settings' ) }>
+                            <ToggleControl
+                                label={ __( 'Show Form Title' ) }
+                                onChange={ ( value ) => props.setAttributes( {
+                                    show_title: value,
+                                } ) }
+                                checked={ show_title }
+                            />
+                        </PanelBody>
+                    </InspectorControls>
+                    <div className={ props.className }>
+                        { show_title &&
+                        <span>{ convertFormId( form_id ) }</span>
+                        }
                         <SelectControl
-                            label={ __( 'Form' ) }
                             value={ form_id }
-                            options={ Formation }
+                            options={ Formation.forms }
                             onChange={ ( value ) => props.setAttributes( {
                                 form_id: parseInt( value ),
                             } ) }
                         />
-                        </PanelBody>
-                    </InspectorControls>
-                    <div className={props.className}>
-                        { form_id &&
-                        <span>Form Embedded : {form_id}</span>
-                        }
-                        { ! form_id &&
-                        <span>Select a Form to embed: {form_id}</span>
-                        }
                     </div>
                 </Fragment>
             );

@@ -7,8 +7,8 @@ const field = {
     ...BaseInput,
     name: 'formation/textarea',
     title: __( 'Text Area' ),
+    description: __( 'Text box/paragraph input field.' ),
     category: 'fields',
-    icon: 'forms',
     keywords: [
         __( 'Field' ),
         __( 'Form' ),
@@ -20,6 +20,12 @@ const field = {
             type: 'number',
             default: 5
         }
+    },
+    example: {
+        attributes: {
+            ...BaseInput.example.attributes,
+            label: __('Textarea'),
+        },
     },
     input: InputField,
     settings: Settings,
