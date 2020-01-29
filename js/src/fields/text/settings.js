@@ -21,6 +21,7 @@ const Settings = ( props ) => {
                 { value: 'email', label: __( 'Email' ) },
                 { value: 'tel', label: __( 'Tel' ) },
                 { value: 'date', label: __( 'Date' ) },
+                { value: 'hidden', label: __( 'Hidden' ) },
             ] }/>
     );
 };
