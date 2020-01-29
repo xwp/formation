@@ -81,6 +81,7 @@ class Checkbox extends Select {
 			'name'       => $this->get_option_name(),
 			'id'         => $this->get_option_id( $index ),
 			'checked'    => empty( $is_checked ) ? false : true,
+			'data-slug'  => $this->args['slug'],
 			'data-field' => $this->data_att,
 		);
 

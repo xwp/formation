@@ -427,6 +427,7 @@ abstract class FieldAbstract {
 			'required'    => $this->args['required'],
 			'value'       => $value,
 			'data-field'  => $this->type,
+			'data-slug'   => $this->args['slug'],
 			'class'       => array(
 				'formation-field-' . $this->type,
 			),

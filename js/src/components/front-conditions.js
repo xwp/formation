@@ -27,11 +27,23 @@ const initConditionals = () => {
 
         toggleField( condition_field, 'hide' );
         const condition = JSON.parse( condition_field.dataset.condition );
-        const bound_fields = condition_field.parentNode.querySelectorAll( '[data-field][name=' + condition.field + ']' );
+        const bound_fields = condition_field.parentNode.querySelectorAll( '[data-field][data-slug=' + condition.field + ']' );
         [ ...bound_fields ].map( ( field ) => {
             field.addEventListener( 'input', ( ev ) => {
+                const values = [];
+                for ( let f of bound_fields ) {
+                    if ( f.type === 'checkbox' || f.type === 'radio' ) {
+                        if ( f.checked ) {
+                            values.push( f.value );
+                        }
+                    }
+                    else {
+                        values.push( f.value );
+                    }
+                }
+
                 if ( condition.compare === 'equal' ) {
-                    if ( field.value === condition.value ) {
+                    if ( values.indexOf( condition.value ) >= 0 ) {
                         toggleField( condition_field, 'show' );
                     }
                     else {
@@ -39,11 +51,11 @@ const initConditionals = () => {
                     }
                 }
                 else if ( condition.compare === 'not_equal' ) {
-                    if ( field.value === condition.value ) {
-                        toggleField( condition_field, 'hide' );
+                    if ( values.indexOf( condition.value ) < 0 ) {
+                        toggleField( condition_field, 'show' );
                     }
                     else {
-                        toggleField( condition_field, 'show' );
+                        toggleField( condition_field, 'hide' );
                     }
                 }
             } );
