@@ -70,7 +70,7 @@ const FormationFieldConditions = ( props ) => {
                             ]
                         }
                         onChange={ ( value ) => props.setAttributes( {
-                            condition_action: value,
+                            condition_compare: value,
                         } ) }
                     />
                     <TextControl
