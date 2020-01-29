@@ -6,6 +6,8 @@
 
 import './style.scss';
 
+import initConditionals from './components/front-conditions';
+
 const repeaterTemplates = {};
 const repeaterEntries = {};
 const repeaterTriggers = {};
@@ -169,3 +171,4 @@ const buildEntries = ( repeater ) => {
 };
 
 repeatable();
+initConditionals();
