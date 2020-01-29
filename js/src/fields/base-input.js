@@ -10,6 +10,8 @@ import FormationFieldInput from '../components/field-input';
 import FormationFieldSettings from '../components/field-settings';
 import FormationFieldExtensions from '../components/field-extentions';
 
+import { fieldIcon } from '../components/icons';
+
 // Define the input field edit component.
 const LabelField = ( props ) => {
     const {
@@ -64,13 +66,16 @@ const InputField = ( props ) => {
 const BaseInput = {
     title: __( 'Base Field' ),
     category: 'fields',
-    icon: 'forms',
+    icon: fieldIcon,
     keywords: [
         __( 'Field' ),
         __( 'Form' ),
         __( 'Text' )
     ],
-    supports: [
+    supports: {
+        html: false,
+    },
+    options: [
         'label',
         'slug',
         'placeholder',
@@ -79,6 +84,13 @@ const BaseInput = {
         'required',
         'repeatable',
     ],
+    example: {
+        attributes: {
+            label: __('Text Input'),
+            description: __('Input description'),
+            placeholder: __('field placeholder'),
+        },
+    },
     attributes: {
         label: {
             type: 'string',
@@ -117,13 +129,26 @@ const BaseInput = {
         },
         has_error: {
             type: 'string',
-        }
+        },
+        condition_action : {
+            type: 'string',
+            default : 'show',
+        },
+        condition_field : {
+            type: 'string',
+        },
+        condition_compare : {
+            type: 'string',
+        },
+        condition_value : {
+            type: 'string',
+        },
     },
     label: LabelField,
     input: InputField,
     settings: ( props ) => ( <></> ),
     extension: ( props ) => ( <></> ),
-    description: DescriptionField,
+    descriptionField: DescriptionField,
     edit: ( props ) => {
 
         const {
@@ -132,11 +157,12 @@ const BaseInput = {
             has_error,
         } = props.attributes;
 
-        if(  !props.isSelected ) {
+        if ( !props.isSelected ) {
             // check for a slug.
             if ( ( !label || label.length === 0 ) ) {
                 wp.data.dispatch( 'core/block-editor' ).selectBlock( _unique_id );
-            } else {
+            }
+            else {
                 // check slug isn't used.
 
             }

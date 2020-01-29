@@ -30,7 +30,7 @@ const FormationFieldSettings = ( props ) => {
     const blockType = getBlockType( props.name );
     const SettingsComponent = blockType.settings;
     const supports = ( support ) => {
-        return blockType.supports.indexOf( support ) > -1;
+        return blockType.options.indexOf( support ) > -1;
     };
     const toggleAttribute = ( attribute ) => {
         return ( newValue ) => {

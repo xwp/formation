@@ -219,7 +219,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 			'exclude_from_search' => true,
 			'publicly_queryable'  => true,
 			'rewrite'             => true,
-			'capability_type'     => 'page',
+			'capability_type'     => 'post',
 			'show_in_rest'        => true,
 			'rest_base'           => self::$slug,
 		);
@@ -324,7 +324,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 		}
 
 		$script = 'var Formation = ' . wp_json_encode( $data );
-		wp_add_inline_script( 'formation-editor-js', $script );
+		wp_add_inline_script( 'formation-blocks-js', $script );
 	}
 
 	/**
