@@ -226,6 +226,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 			}
 			// Use combined here because originals may have been edited. Revision posts will have unedited original data.
 			foreach ( $submission['data'] as $field => $entry ) {
+				$entry = $this->field_template_replace( $entry );
 				update_post_meta( $entry_id, $field, $entry );
 				$submission_data[ $field ] = $entry;
 			}
@@ -261,6 +262,32 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 		}
 	}
 
+	/**
+	 * Replace exact value templates.
+	 *
+	 * @todo Consider whether to allow this to be filtered. Will require sanitization if so.
+	 *
+	 * @param mixed $value The value.
+	 * @return mixed
+	 */
+	public function field_template_replace( $value ) {
+
+		$allowed_patterns = array( '[[timestamp]]' );
+
+		if ( ! in_array( $value, $allowed_patterns, true ) ) {
+			return $value;
+		}
+
+		switch ( $value ) {
+			case '[[timestamp]]':
+				$value = time();
+				break;
+			default:
+				break;
+		}
+
+		return $value;
+	}
 
 	/**
 	 * Get an entry by ID.
