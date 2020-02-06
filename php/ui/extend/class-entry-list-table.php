@@ -173,14 +173,14 @@ class Entry_List_Table  extends \WP_List_Table {
 
 		$title = '<strong>' . $item->post_title . '</strong>';
 
-		$actions = array(
+		$actions = apply_filters( 'formation_entry_list_table_actions', array(
 			'trash'   => array(
 				'label' => __( 'Delete', 'formation' ),
 			),
 			'publish' => array(
 				'label' => __( 'Restore', 'formation' ),
 			),
-		);
+		), $item );
 
 		array_walk(
 			$actions,
@@ -439,6 +439,9 @@ class Entry_List_Table  extends \WP_List_Table {
 				CSV::array_to_csv( $items, $filename, true, remove_query_arg( 'action' ) );
 				exit;
 			default:
+			    $nonce          = Input::text( '_wpnonce' );
+				$verified_nonce = \wp_verify_nonce( Input::text( '_wpnonce' ), $this->nonce_action( $this->action ) );
+			    do_action( 'formation_entry_list_table_' . $this->action . '_action', $this->current_entry, $verified_nonce );
 				return;
 		}
 
