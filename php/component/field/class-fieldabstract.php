@@ -297,13 +297,16 @@ abstract class FieldAbstract {
 		// Let the validate start checking if error for 3rd party plugins to be able to send errors when populating.
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
-		}
-		// Sanitize value.
-		$proposed_value = $this->sanitize_value( $value );
-		// Check if we got an error.
-		if ( is_wp_error( $proposed_value ) ) {
-			$this->set_notice( $proposed_value->get_error_code() );
-			$this->valid = false;
+			$this->valid    = false;
+			$proposed_value = $value;
+		} else {
+			// Sanitize value.
+			$proposed_value = $this->sanitize_value( $value );
+			// Check if we got an error.
+			if ( is_wp_error( $proposed_value ) ) {
+				$this->set_notice( $proposed_value->get_error_code() );
+				$this->valid = false;
+			}
 		}
 
 		return $proposed_value;
