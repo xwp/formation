@@ -240,7 +240,6 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_submitted_value() {
-		$name  = $this->get_base_name();
 		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
 		return $value;
