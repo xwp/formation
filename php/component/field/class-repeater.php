@@ -89,25 +89,34 @@ class Repeater extends FieldAbstract {
 	 */
 	protected function validate_value( $value ) {
 
-		if ( true === $this->args['required'] && is_null( $value ) ) {
+		if ( true === $this->args['required'] && empty( $value ) ) {
 			$this->set_notice( 'required' );
 		} elseif ( is_array( $value ) && ! empty( $this->fields ) ) {
 			foreach ( $value as &$item ) {
+				$instance_invalid = false; // Instance validity flag.
 				foreach ( $this->fields as $field ) {
 					if ( isset( $this->field->instances[ $field ] ) ) {
 						$field_instance = $this->field->instances[ $field ];
 						$field_name     = $field_instance->get_base_name();
 						if ( ! isset( $item[ $field_name ] ) ) {
-							continue; // New field after entry or new options added.
+							$item[ $field_name ] = null;
 						}
 						$proposed_value = $field_instance->validate_value( $item[ $field_name ] );
 						if ( is_wp_error( $proposed_value ) ) {
 							$this->set_notice( $proposed_value->get_error_code() );
-							$this->valid = false;
+							$this->set_validity( false );
 						}
-						$item[ $field_name ] = $proposed_value;
+						// Reset internal field validity to true, as this is handled by the repeater.
+						if ( false === $field_instance->is_valid() ) {
+							$instance_invalid = true;
+							$this->set_validity( false );
+							$this->set_notice( 'has_required' );
+						}
+						$field_instance->valid = true;
+						$item[ $field_name ]   = $proposed_value;
 					}
 				}
+				$item['_invalid_'] = $instance_invalid;
 			}
 		}
 
@@ -154,17 +163,18 @@ class Repeater extends FieldAbstract {
 	 */
 	public function get_submitted_value() {
 
-		// Set inner blocks to repeatable to stop processing.
+		// Get value from input.
+		$value       = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
+		$has_entries = json_decode( $value, true );
+
+		// Set inner blocks to repeatable to stop processing if there are entries.
 		foreach ( $this->fields as $field ) {
 			if ( isset( $this->field->instances[ $field ] ) ) {
 				$this->field->instances[ $field ]->set_args( [ 'is_repeatable' => true ] );
 			}
 		}
 
-		// Get value from input.
-		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
-
-		return json_decode( $value, true );
+		return $has_entries;
 	}
 
 }
