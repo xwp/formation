@@ -148,6 +148,10 @@ abstract class FieldAbstract {
 				'type'    => 'error',
 				'message' => __( 'Field is required', 'formation' ),
 			),
+			'has_required'  => array(
+				'type'    => 'error',
+				'message' => __( 'Some fields are required', 'formation' ),
+			),
 		);
 
 		/**
@@ -240,6 +244,7 @@ abstract class FieldAbstract {
 	 * @return mixed
 	 */
 	public function get_submitted_value() {
+
 		$value = filter_input( INPUT_POST, $this->get_base_name(), FILTER_DEFAULT );
 
 		return $value;
@@ -286,6 +291,15 @@ abstract class FieldAbstract {
 	}
 
 	/**
+	 * Set the field validity.
+	 *
+	 * @return mixed
+	 */
+	public function set_validity( $validity ) {
+		$this->valid = $validity;
+	}
+
+	/**
 	 * Validates a value.
 	 *
 	 * @param \WP_Error|mixed $value The value to validate.
@@ -296,7 +310,7 @@ abstract class FieldAbstract {
 		// Let the validate start checking if error for 3rd party plugins to be able to send errors when populating.
 		if ( true === $this->args['required'] && is_null( $value ) ) {
 			$this->set_notice( 'required' );
-			$this->valid    = false;
+			$this->set_validity( false );
 			$proposed_value = $value;
 		} else {
 			// Sanitize value.
@@ -304,7 +318,7 @@ abstract class FieldAbstract {
 			// Check if we got an error.
 			if ( is_wp_error( $proposed_value ) ) {
 				$this->set_notice( $proposed_value->get_error_code() );
-				$this->valid = false;
+				$this->set_validity( false );
 			}
 		}
 
@@ -488,11 +502,12 @@ abstract class FieldAbstract {
 	 */
 	public function get_notice_attributes( $notice ) {
 		return array(
-			'class' => array(
+			'class'       => array(
 				'notice',
 				'formation-field-notice',
 				'formation-field-notice-' . $notice['type'],
 			),
+			'data-notice' => $notice['type'],
 		);
 	}
 

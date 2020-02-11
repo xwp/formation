@@ -65,9 +65,15 @@ const addGroup = ( event ) => {
     const instance_id = Math.floor( Math.random() * Math.floor( 99999 ) );
 
     const copy = template.cloneNode( true );
+    const notices = copy.querySelectorAll( '[data-notice]' );
     const fields = copy.querySelectorAll( '[data-field]' );
     const struct = {};
 
+    if ( !event.detail._invalid_ ) {
+        [ ...notices ].map( ( notice ) => {
+            notice.remove();
+        } );
+    }
     [ ...fields ].map( ( field ) => {
         const name = field.name;
         if ( name.indexOf( '[]' ) >= 0 ) {
@@ -78,10 +84,11 @@ const addGroup = ( event ) => {
             }
         }
         else {
-            if( field.type === 'checkbox' ){
-                if( field.checked ){
+            if ( field.type === 'checkbox' ) {
+                if ( field.checked ) {
                     struct[ field.name ] = field.value;
-                }else{
+                }
+                else {
                     struct[ field.name ] = null;
                 }
             }
