@@ -308,7 +308,7 @@ abstract class FieldAbstract {
 	 */
 	protected function validate_value( $value ) {
 		// Let the validate start checking if error for 3rd party plugins to be able to send errors when populating.
-		if ( true === $this->args['required'] && is_null( $value ) ) {
+		if ( ! $this->conditional_validity( $value ) ) {
 			$this->set_notice( 'required' );
 			$this->set_validity( false );
 			$proposed_value = $value;
@@ -323,6 +323,38 @@ abstract class FieldAbstract {
 		}
 
 		return $proposed_value;
+	}
+
+	/**
+	 * Checks the conditional validity of the field.
+	 *
+	 * @param mixed $value The field value.
+	 *
+	 * @return bool
+	 */
+	public function conditional_validity( $value ) {
+		$allowed = true;
+		// Check id the field is required first.
+		if ( true === $this->args['required'] ) {
+			// Is null, set allowed to false if required.
+			if ( is_null( $value ) ) {
+				$allowed = false;
+			}
+			// Check if there's conditional logic.
+			if ( ! empty( $this->args['has_conditions'] ) && false === $allowed ) {
+				// Check if logic enables this to be hidden.
+				foreach ( $this->field->instances as $field_instance ) {
+					if ( $this->args['condition_field'] === $field_instance->args['slug'] ) {
+						$condition_value = $field_instance->get_value();
+						if ( ! in_array( $this->args['condition_value'], (array) $condition_value, true ) ) {
+							$allowed = true;
+						}
+					}
+				}
+			}
+		}
+
+		return $allowed;
 	}
 
 	/**
