@@ -59,6 +59,8 @@ const initConditionals = () => {
                     }
                 }
             } );
+            // Initial trigger for initial load.
+            field.dispatchEvent( new Event( 'input' ) );
         } );
     } );
 
