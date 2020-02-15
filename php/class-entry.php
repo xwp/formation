@@ -280,7 +280,7 @@ class Entry implements Component\Post_Types, Component\Post_Setup {
 
 		switch ( $value ) {
 			case '[[timestamp]]':
-				$value = time();
+				$value = current_time( 'r' );
 				break;
 			default:
 				break;
