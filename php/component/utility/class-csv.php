@@ -30,7 +30,7 @@ class CSV {
 
 		// Set download headers.
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( "Content-Disposition: attachment; filename=$filename" );
+		header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
 	}
 
 	/**
@@ -127,4 +127,22 @@ class CSV {
 			$result[ $item_key ] = $item;
 		}
 	}
+
+	/**
+	 * Normalize file names by converting HTML entities back to the respective special characters.
+	 *
+	 * @param string $form_title Title of the form.
+	 * @return string $normalize_form_title The normalized form title with special characters.
+	 */
+	public static function normalize_filename( $form_title ) {
+		if ( ! $form_title ) {
+			return;
+		}
+
+		// converts HTML entities for ampersands, dashes etc. back into the special character.
+		$normalize_form_title = html_entity_decode( $form_title, ENT_QUOTES );
+
+		return $normalize_form_title;
+	}
+
 }

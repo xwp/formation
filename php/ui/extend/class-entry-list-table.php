@@ -434,7 +434,8 @@ class Entry_List_Table  extends \WP_List_Table {
 			case 'download-csv':
 				$items    = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
 				$date     = gmdate( 'Y_m_d__H_i_s' );
-				$filename = sprintf( '%s-%s.csv', get_the_title( $this->parent_id ), $date );
+				$normalize_filename = CSV::normalize_filename( get_the_title( $this->parent_id ) );
+				$filename = sprintf( '%s-%s.csv', $normalize_filename, $date );
 				$filename = apply_filters( 'formation_csv_download_filename', $filename, $this->parent_id );
 				CSV::array_to_csv( $items, $filename, true, remove_query_arg( 'action' ) );
 				exit;
