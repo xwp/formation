@@ -29,7 +29,8 @@ const initConditionals = () => {
         const condition = JSON.parse( condition_field.dataset.condition );
         const bound_fields = condition_field.parentNode.querySelectorAll( '[data-field][data-slug=' + condition.field + ']' );
         [ ...bound_fields ].map( ( field ) => {
-            field.addEventListener( 'input', ( ev ) => {
+        	const event_type = ( field.type === 'checkbox' || field.type === 'radio' || field.type === 'select-one' || field.type === 'select-multiple' ) ? 'change' : 'input';
+            field.addEventListener( event_type , ( ev ) => {
                 const values = [];
                 for ( let f of bound_fields ) {
                     if ( f.type === 'checkbox' || f.type === 'radio' ) {
@@ -60,7 +61,7 @@ const initConditionals = () => {
                 }
             } );
             // Initial trigger for initial load.
-            field.dispatchEvent( new Event( 'input' ) );
+            field.dispatchEvent( new Event( event_type ) );
         } );
     } );
 
