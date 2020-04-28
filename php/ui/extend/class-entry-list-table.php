@@ -510,10 +510,13 @@ class Entry_List_Table  extends \WP_List_Table {
 		$children = new \WP_Query( $query );
 
 		foreach ( $children->posts as $post ) {
-			$item                   = json_decode( $post->post_content, true );
-			$item['_entry_id']      = $post->ID;
-			$item['_entry_created'] = $post->post_date_gmt;
-			$download_items[]       = $item;
+			$item                        = json_decode( $post->post_content, true );
+			$user                        = get_userdata( $post->post_author );
+			$item['_entry_id']           = $post->ID;
+			$item['_entry_created']      = $post->post_date_gmt;
+			$item['_entry_author_email'] = $user->data->user_email;
+
+			$download_items[] = $item;
 		}
 
 		return $download_items;
