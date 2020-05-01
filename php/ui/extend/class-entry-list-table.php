@@ -433,15 +433,13 @@ class Entry_List_Table  extends \WP_List_Table {
 				}
 				break;
 			case 'download-csv':
-				$items    = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
-				$config = new Form_Config( $this->parent_id );
-
-				( new CSV($this->parent_id, $items) )->array_to_csv(true);
+				$items = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
+				( new CSV( $this->parent_id, $items ) )->array_to_csv( true );
 				exit;
 			default:
-			    $nonce          = Input::text( '_wpnonce' );
+				$nonce          = Input::text( '_wpnonce' );
 				$verified_nonce = \wp_verify_nonce( Input::text( '_wpnonce' ), $this->nonce_action( $this->action ) );
-			    do_action( 'formation_entry_list_table_' . $this->action . '_action', $this->current_entry, $verified_nonce );
+				do_action( 'formation_entry_list_table_' . $this->action . '_action', $this->current_entry, $verified_nonce );
 				return;
 		}
 
