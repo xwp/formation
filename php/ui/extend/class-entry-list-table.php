@@ -10,6 +10,7 @@ namespace Formation\UI\Extend;
 use Formation\Component\Utility\Input;
 use Formation\Component\Utility\CSV;
 use Formation\Component\Utility\Utils;
+use Formation\Component\Utility\Form_Config;
 
 /**
  * Extends WP_List_table
@@ -433,11 +434,9 @@ class Entry_List_Table  extends \WP_List_Table {
 				break;
 			case 'download-csv':
 				$items    = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
-				$date     = gmdate( 'Y_m_d__H_i_s' );
-				$normalize_filename = CSV::normalize_filename( get_the_title( $this->parent_id ) );
-				$filename = sprintf( '%s-%s.csv', $normalize_filename, $date );
-				$filename = apply_filters( 'formation_csv_download_filename', $filename, $this->parent_id );
-				CSV::array_to_csv( $items, $filename, true, remove_query_arg( 'action' ) );
+				$config = new Form_Config( $this->parent_id );
+
+				( new CSV($this->parent_id, $items) )->array_to_csv(true);
 				exit;
 			default:
 			    $nonce          = Input::text( '_wpnonce' );

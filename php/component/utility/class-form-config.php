@@ -14,13 +14,88 @@ use Formation\Form;
 class Form_Config {
 
 	/**
-	 * Parse the blocks in a form post object to get a standardised array of the form config
-	 *
-	 * @param int     $form_id The post id of a form object.
+	 * @var int
+	 */
+	protected $form_id;
+
+	/**
+	 * @var array
+	 */
+	protected $config;
+
+	/**
+	 * Form_Config constructor.
+	 * @param $form_id
+	 */
+	public function __construct( $form_id ) {
+		$this->form_id = $form_id;
+		$this->config  = $this->parse_config();
+	}
+
+	/**
 	 * @return array
 	 */
-	public static function get_config( $form_id ) {
-		$form = get_post( $form_id );
+	public function get_config() {
+		return $this->config;
+	}
+
+	/**
+	 * Find the field label for a provided slug, or just return the slug if it doesn't exist
+	 *
+	 * @param  $slug
+	 * @return string
+	 */
+	public function get_field_label( $slug ) {
+		return isset($this->config[$slug]) ? $this->config[$slug]['attrs']['label'] : $slug;
+	}
+
+	/**
+	 * Get the field type for a provided slug
+	 *
+	 * @param $slug
+	 * @return string|null
+	 */
+	public function get_field_type( $slug ) {
+		return isset($this->config[ $slug ]) ? $this->config[ $slug ][ 'type' ] : null;
+	}
+
+	/**
+	 * Is this field of type repeatable
+	 *
+	 * @param $slug
+	 * @return bool
+	 */
+	public function is_repeater( $slug ) {
+		return 'repeatable' === $this->get_field_type( $slug );
+	}
+
+	/**
+	 * Get the full label for a field, including a hierarchical 'breadcrumb' style label if field is a repeater child
+	 *
+	 * @param $slug
+	 * @return string
+	 */
+	public function get_full_label( $slug ) {
+		$label = $this->get_field_label( $slug );
+		$parent = $this->get_parent_slug( $slug );
+		if ( $parent ) {
+			$label = $this->get_full_label( $parent ) . " > " . $label;
+		}
+
+		return $label;
+	}
+
+	public function get_parent_slug( $slug ) {
+		return isset($this->config[ $slug ]) ? $this->config[ $slug ][ 'parent' ] : null;
+	}
+
+	/**
+	 * Parse the blocks in a form post object to get a standardised array of the form config
+	 *
+	 * @return array
+	 */
+	public function parse_config() {
+		$form = get_post( $this->form_id );
 
 		if ( !$form || Form::$slug !== $form->post_type ) {
 			return array();
