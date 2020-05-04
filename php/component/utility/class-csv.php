@@ -185,7 +185,7 @@ class CSV {
 					// don't include the invalidity field or any field which somehow has no slug.
 					if ( $field_slug && ( '_invalid_' !== $field_slug ) ) {
 						$field_type                                  = $this->config->get_field_type( $field_slug );
-						$data[ $repeater_slug ][ $i ][ $field_slug ] = static::get_formatted_value( $field_value, $field_type );
+						$data[ $repeater_slug ][ $i ][ $field_slug ] = Form_Presenter::get_formatted_value( $field_value, $field_type );
 					}
 				}
 			}
@@ -242,7 +242,7 @@ class CSV {
 		foreach ( $row as $slug => $field_value ) {
 			if ( ! $this->config->is_repeater( $slug ) ) {
 				$field_type    = $this->config->get_field_type( $slug );
-				$data[ $slug ] = static::get_formatted_value( $field_value, $field_type );
+				$data[ $slug ] = Form_Presenter::get_formatted_value( $field_value, $field_type );
 			} else {
 				$repeaters[ $slug ] = $field_value;
 			}
@@ -262,21 +262,6 @@ class CSV {
 		}
 	}
 
-	/**
-	 * Format the input field according to its field type
-	 *
-	 * @param mixed  $value input value to be formatted.
-	 * @param string $type  type of field upon which to base formatting.
-	 * @return string
-	 */
-	protected static function get_formatted_value( $value, $type ) {
-		switch ( $type ) {
-			case 'checkbox':
-				return is_array( $value ) ? implode( ', ', $value ) : $value;
-			default:
-				return is_array( $value ) ? wp_json_encode( $value ) : $value;
-		}
-	}
 
 	/**
 	 * Generate a default filename for this CSV file
