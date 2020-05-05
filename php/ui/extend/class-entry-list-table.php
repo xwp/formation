@@ -7,9 +7,10 @@
 
 namespace Formation\UI\Extend;
 
+use Formation\Component\Utility\Form_Presenter;
 use Formation\Component\Utility\Input;
 use Formation\Component\Utility\CSV;
-use Formation\Component\Utility\Utils;
+use Formation\Component\Utility\Form_Config;
 
 /**
  * Extends WP_List_table
@@ -219,7 +220,9 @@ class Entry_List_Table  extends \WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'preview':
-				return Utils::trim_text( $item->post_content, 200 );
+				$data   = static::prepare_entry_data( $item );
+				$config = new Form_Config( $this->parent_id );
+				return Form_Presenter::get_formatted_entry( $data, $config );
 			case 'submitted':
 				return get_date_from_gmt( $item->post_date_gmt );
 			case 'modified':
@@ -432,17 +435,13 @@ class Entry_List_Table  extends \WP_List_Table {
 				}
 				break;
 			case 'download-csv':
-				$items    = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
-				$date     = gmdate( 'Y_m_d__H_i_s' );
-				$normalize_filename = CSV::normalize_filename( get_the_title( $this->parent_id ) );
-				$filename = sprintf( '%s-%s.csv', $normalize_filename, $date );
-				$filename = apply_filters( 'formation_csv_download_filename', $filename, $this->parent_id );
-				CSV::array_to_csv( $items, $filename, true, remove_query_arg( 'action' ) );
+				$items = apply_filters( 'formation_csv_download_items', $this->prepare_for_download(), $this->parent_id );
+				( new CSV( $this->parent_id, $items ) )->array_to_csv( true );
 				exit;
 			default:
-			    $nonce          = Input::text( '_wpnonce' );
+				$nonce          = Input::text( '_wpnonce' );
 				$verified_nonce = \wp_verify_nonce( Input::text( '_wpnonce' ), $this->nonce_action( $this->action ) );
-			    do_action( 'formation_entry_list_table_' . $this->action . '_action', $this->current_entry, $verified_nonce );
+				do_action( 'formation_entry_list_table_' . $this->action . '_action', $this->current_entry, $verified_nonce );
 				return;
 		}
 
@@ -510,14 +509,25 @@ class Entry_List_Table  extends \WP_List_Table {
 		$children = new \WP_Query( $query );
 
 		foreach ( $children->posts as $post ) {
-			$item                   = json_decode( $post->post_content, true );
-			$item['_entry_id']      = $post->ID;
-			$item['_entry_created'] = $post->post_date_gmt;
-			$download_items[]       = $item;
+			$download_items[] = static::prepare_entry_data( $post );
 		}
 
 		return $download_items;
 	}
+
+	/**
+	 * Prepare a single entry's data in a consistent way with its ID and creation date
+	 *
+	 * @param $post
+	 * @return mixed
+	 */
+	private static function prepare_entry_data( $post ) {
+		$item                   = json_decode( $post->post_content, true );
+		$item['_entry_id']      = $post->ID;
+		$item['_entry_created'] = $post->post_date_gmt;
+		return $item;
+	}
+
 	/**
 	 * Set post status.
 	 *
