@@ -90,6 +90,10 @@ const field = {
             <InnerBlocks.Content/>
         );
     },
+	supports: {
+    	...BaseInput.supports,
+		multiple: false
+	}
 };
 
 const { name } = field;
