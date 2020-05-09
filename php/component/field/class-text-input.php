@@ -39,8 +39,9 @@ class Text_Input extends FieldAbstract {
 			$attributes = array(
 				'class'           => array(
 					'formation-field',
+					'formation-field-hidden',
 				),
-				'data-field-type' => $this->type,
+				'data-field-type' => $this->args['type'],
 				'data-form'       => get_queried_object_id(),
 			);
 

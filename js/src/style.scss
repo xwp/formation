@@ -64,6 +64,11 @@
 			width : 100%;
 		}
 
+	  	&-hidden {
+			padding: 0;
+		    margin: 0;
+	  	}
+
 		.formation-field-checkbox,
 		.formation-field-radio,
 		.formation-field-select {
