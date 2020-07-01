@@ -63,7 +63,7 @@ class Form_Presenter {
 				$data      .= sprintf(
 					'<strong>%s:</strong>&nbsp;%s<br/>',
 					esc_html( $config->get_field_label( $slug ) ),
-					esc_html( static::get_formatted_value( $field_value, $field_type ) ),
+					esc_html( static::get_formatted_value( $field_value, $field_type ) )
 				);
 			}
 		}
