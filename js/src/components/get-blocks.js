@@ -6,10 +6,16 @@ const getInnerBlocks = ( block, types ) => {
     let found = [];
     for ( const innerBlock of block.innerBlocks ) {
         if ( types.indexOf( innerBlock.name ) >= 0 ) {
-            found.push( innerBlock );
+			const { attributes } = innerBlock;
+			const { slug, label } = attributes;
+
+			found.push({
+				label,
+				value: slug,
+			});
         }
         if ( innerBlock.innerBlocks.length ) {
-            let inners = getInnerBlocks( innerBlock, types );
+			let inners = getInnerBlocks( innerBlock, types );
             if ( inners.length ) {
                 found = found.concat( inners );
             }
@@ -29,7 +35,6 @@ export const getFieldBlocks = ( types = null, exclude = null ) => {
     }
     for ( const block of blocks ) {
         if ( types.indexOf( block.name ) >= 0 && block.attributes.slug !== exclude ) {
-
             found.push( {
                 value: block.attributes.slug,
                 label: block.attributes.label
@@ -41,6 +46,6 @@ export const getFieldBlocks = ( types = null, exclude = null ) => {
                 found = found.concat( inners );
             }
         }
-    }
+	}
     return found;
 };
