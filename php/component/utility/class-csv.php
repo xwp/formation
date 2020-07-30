@@ -131,13 +131,14 @@ class CSV {
 		);
 
 		foreach ( $this->config->get_config() as $slug => $field ) {
+			$field_type = $this->config->get_field_type( $slug );
 			// don't include repeaters since their values are in their child fields, which will have their own column.
-			if ( ! $this->config->is_repeater( $slug ) ) {
+			if ( 'repeatable' !== $field_type ) {
 				$headers[] = $this->config->get_full_label( $slug );
 			}
 		}
 
-		return $headers;
+		return apply_filters( 'formation_prepare_csv_header_rows', $headers, $this->form_id );
 	}
 
 	/**
@@ -146,24 +147,29 @@ class CSV {
 	 * @return array
 	 */
 	protected function prepare_csv_data() {
-		$data = array();
+		$data = apply_filters( 'formation_prepare_csv_data', array(), $this->output_data, $this->form_id );
+
+		if ( ! empty( $data ) ) {
+			return $data;
+		}
 
 		foreach ( $this->output_data as $data_row ) {
+
 			$output_row = array(
 				'Entry ID'      => isset( $data_row['_entry_id'] ) ? $data_row['_entry_id'] : '',
 				'Entry Created' => isset( $data_row['_entry_created'] ) ? $data_row['_entry_created'] : '',
 			);
 
 			foreach ( $this->config->get_config() as $slug => $field ) {
+				$field_type = $this->config->get_field_type( $slug );
 				// don't include repeaters since their values are in their child fields, which will have their own column.
-				if ( ! $this->config->is_repeater( $slug ) ) {
+				if ( 'repeatable' !== $field_type ) {
 					$output_row[] = isset( $data_row[ $slug ] ) ? $data_row[ $slug ] : '';
 				}
 			}
 
 			$data[] = $output_row;
 		}
-
 		return $data;
 	}
 
@@ -240,8 +246,8 @@ class CSV {
 
 		// populate all the fields that aren't repeaters first so we've got "parent" data.
 		foreach ( $row as $slug => $field_value ) {
-			if ( ! $this->config->is_repeater( $slug ) ) {
-				$field_type    = $this->config->get_field_type( $slug );
+			$field_type = $this->config->get_field_type( $slug );
+			if ( 'repeatable' !== $field_type ) {
 				$data[ $slug ] = Form_Presenter::get_formatted_value( $field_value, $field_type );
 			} else {
 				$repeaters[ $slug ] = $field_value;

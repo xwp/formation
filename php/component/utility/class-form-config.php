@@ -68,16 +68,6 @@ class Form_Config {
 	}
 
 	/**
-	 * Is this field of type repeatable
-	 *
-	 * @param string $slug The slug to check.
-	 * @return bool
-	 */
-	public function is_repeater( $slug ) {
-		return 'repeatable' === $this->get_field_type( $slug );
-	}
-
-	/**
 	 * Get the full label for a field, including a hierarchical 'breadcrumb' style label if field is a repeater child
 	 *
 	 * @param string $slug The slug to get the label for.
