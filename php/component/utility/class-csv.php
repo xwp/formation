@@ -138,7 +138,7 @@ class CSV {
 			}
 		}
 
-		return $headers;
+		return apply_filters( 'formation_prepare_csv_header_rows', $headers, $this->form_id );
 	}
 
 	/**
