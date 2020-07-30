@@ -52,7 +52,8 @@ class Form_Presenter {
 				$data .= str_repeat( '&nbsp;', $repeater_level );
 			}
 
-			if ( $config->is_repeater( $slug ) && ! empty( $field_value ) ) {
+			$field_type = $config->get_field_type( $slug );
+			if ( 'repeatable' === $field_type && ! empty( $field_value ) ) {
 				$data .= sprintf( '<strong>%s:</strong><br/>', esc_html( $config->get_field_label( $slug ) ) );
 				foreach ( $field_value as $repeater_row ) {
 					$data .= static::get_formatted_entry( $repeater_row, $config, $repeater_level + 1 );
