@@ -147,7 +147,11 @@ class CSV {
 	 * @return array
 	 */
 	protected function prepare_csv_data() {
-		$data = array();
+		$data = apply_filters( 'formation_prepare_csv_data', array(), $this->output_data, $this->form_id );
+
+		if ( ! empty( $data ) ) {
+			return $data;
+		}
 
 		foreach ( $this->output_data as $data_row ) {
 
