@@ -8,6 +8,7 @@
 namespace Formation\Component\Utility;
 
 use Formation;
+use WP_Embed;
 
 /**
  * Class Utils
@@ -81,8 +82,22 @@ class Utils {
 				$timezone = '+' . $tz_offset;
 			}
 		}
-		$datetime = new \DateTime( $str, new \DateTimeZone( $timezone ) );
-		return $datetime->format( 'U' );
+
+		$str = str_replace( '/', '-', $str );
+
+		// Ensure format of $str is either dd/mm/yyyy OR yyyy/mm/dd.
+		if ( preg_match( '/(([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)\d{4})|(\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1]))/', $str ) ) {
+			// Convert format to yyyy/mm/dd.
+			if ( preg_match( '/(([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)\d{4})/', $str ) ) {
+				$parts = explode( '-', $str );
+				$str   = implode( '-', array( $parts[2], $parts[1], $parts[0] ) );
+			}
+			// The eventual format for $str will be yyyy/mm/dd.
+			$datetime = new \DateTime( $str, new \DateTimeZone( $timezone ) );
+			return $datetime->format( 'U' );
+		}
+
+		return new \WP_Error( 'invalid_value', __( 'Invalid Date', 'caulfield' ) );
 	}
 
 	/**
@@ -90,9 +105,17 @@ class Utils {
 	 *
 	 * @param string $format The date format.
 	 * @param int    $timestamp The timestamp.
-	 * @return \DateTime|erro
+	 * @return \DateTime|error
 	 */
 	public static function date( $format, $timestamp = null ) {
+		if ( ! absint( $timestamp ) ) {
+			return new \WP_Error( 'invalid_value', __( 'Invalid Timestamp', 'caulfield' ) );
+		}
+
+		if ( is_wp_error( $timestamp ) ) {
+			return $timestamp;
+		}
+
 		$tz_string = get_option( 'timezone_string' );
 		$tz_offset = get_option( 'gmt_offset', 0 );
 		if ( ! empty( $tz_string ) ) {
