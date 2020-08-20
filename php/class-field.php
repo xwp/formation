@@ -78,6 +78,9 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 		}
 		add_filter( 'render_block_data', array( $this, 'register_field_instance' ) );
 
+		/**
+		 * Preload entries from previous submission.
+		 */
 		if ( ! $this->plugin->components['entry']->is_submitting() ) {
 			// Check for an entry.
 			$entry_id = filter_input( INPUT_GET, 'entry_id', FILTER_SANITIZE_NUMBER_INT );
