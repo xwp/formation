@@ -146,11 +146,11 @@ abstract class FieldAbstract {
 			),
 			'required'      => array(
 				'type'    => 'error',
-				'message' => __( 'Field is required', 'formation' ),
+				'message' => sprintf( __( '%s is required', 'formation' ), $this->get_input_label() ),
 			),
 			'has_required'  => array(
 				'type'    => 'error',
-				'message' => __( 'Some fields are required', 'formation' ),
+				'message' => sprintf( __( '%s is required', 'formation' ), $this->get_input_label() ),
 			),
 		);
 
@@ -268,6 +268,25 @@ abstract class FieldAbstract {
 		$slug = $this->args['slug'];
 
 		return $slug;
+	}
+
+	/**
+	 * Parse slug to label.
+	 *
+	 * @return string
+	 */
+	public function get_input_label() {
+		$label = explode( ' ', str_replace( '_', ' ', $this->get_base_name() ) );
+
+		// Implement Pascal Casing.
+		$label_uc = array_map(
+			function( $label ) {
+				return ucfirst( $label );
+			},
+			$label
+		);
+
+		return implode( ' ', $label_uc );
 	}
 
 	/**
@@ -635,7 +654,7 @@ abstract class FieldAbstract {
 				$notice           = wp_parse_args( $notice, $default_notice );
 				$attributes       = $this->get_notice_attributes( $notice );
 				$attribute_string = $this->build_attribute_string( $attributes, 'notice' );
-				$html             = sprintf( '<div %s>%s</div>', $attribute_string, esc_html( $notice['message'] ) );
+				$html             = sprintf( '<div %s><span class="dashicons dashicons-warning"></span>%s</div>', $attribute_string, esc_html( $notice['message'] ) );
 			}
 		}
 
