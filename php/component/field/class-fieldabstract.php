@@ -278,7 +278,7 @@ abstract class FieldAbstract {
 	public function get_input_label() {
 		$label = explode( ' ', str_replace( '_', ' ', $this->get_base_name() ) );
 
-		// Implement Pascal Casing.
+		// Implement Title Casing.
 		$label_uc = array_map(
 			function( $label ) {
 				return ucfirst( $label );
