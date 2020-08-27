@@ -271,6 +271,7 @@ class Form implements Component\Assets, Component\Setup, Component\Notice, Compo
 	 */
 	public function enqueue_front_assets() {
 		wp_enqueue_style( 'formation-public-css' );
+		wp_enqueue_style( 'dashicons' );
 	}
 
 	/**

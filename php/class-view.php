@@ -75,6 +75,7 @@ class View implements Setup {
 		$attribute_string        = Utils::build_attributes( $form_attributes );
 		$html                    = array();
 		$html['opening_wrapper'] = sprintf( '<form %s>', $attribute_string );
+		$html['notices']         = $this->get_input_notices();
 		$html['nonce']           = $this->get_nonce( $post );
 		$html['content']         = $content;
 		$html['submit']          = $this->render_submit( $post );
@@ -152,5 +153,21 @@ class View implements Setup {
 
 		return $button->render();
 
+	}
+
+	/**
+	 * Get Input notices.
+	 */
+	private function get_input_notices() {
+		$field_instances = $this->plugin->components['field']->instances;
+		$notices         = array();
+
+		// Retrieve notices from each field instance.
+		if ( is_array( $field_instances ) && ! empty( $field_instances ) ) {
+			foreach ( $field_instances as $instance ) {
+				$notices[] = $instance->render_notice();
+			}
+		}
+		return implode( $notices );
 	}
 }
