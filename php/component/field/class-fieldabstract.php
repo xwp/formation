@@ -356,8 +356,7 @@ abstract class FieldAbstract {
 		$allowed = true;
 		// Check id the field is required first.
 		if ( true === $this->args['required'] ) {
-			// Is null, set allowed to false if required.
-			if ( is_null( $value ) ) {
+			if ( empty( $value ) ) {
 				$allowed = false;
 			}
 			// Check if there's conditional logic.
