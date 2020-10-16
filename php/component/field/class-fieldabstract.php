@@ -142,7 +142,7 @@ abstract class FieldAbstract {
 		$messages = array(
 			'invalid_value' => array(
 				'type'    => 'error',
-				'message' => __( 'Invalid Value', 'formation' ),
+				'message' => sprintf( __( '%s is invalid', 'formation' ), $this->get_input_label() ),
 			),
 			'required'      => array(
 				'type'    => 'error',
