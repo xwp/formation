@@ -214,7 +214,8 @@ abstract class FieldAbstract {
 		$value          = apply_filters( 'formation_field_set_value_' . $this->type . '_' . $this->args['slug'], $value, $this );
 		$proposed_value = $this->validate_value( $value );
 		if ( is_wp_error( $proposed_value ) ) {
-			$this->args['value'] = $proposed_value->get_error_message(); // Set to the error since it may be from the filters.
+			// Set to the original value so users will know what input value is causing validation to fail.
+			$this->args['value'] = $value;
 		} else {
 			/**
 			 * Set to the proposed value regardless of validation to allow the user to change or replace the value.
@@ -482,17 +483,13 @@ abstract class FieldAbstract {
 	 */
 	public function get_input_attributes() {
 
-		$value = $this->args['value'];
-		if ( ! empty( $value ) && 'date' === $this->args['type'] ) {
-			$value = Utils::date( 'Y-m-d', Utils::gmstrtotime( $value ) );
-		}
 		$attributes = array(
 			'type'        => $this->args['type'],
 			'name'        => $this->get_input_name(),
 			'id'          => $this->get_id(),
 			'placeholder' => $this->args['placeholder'],
 			'required'    => $this->args['required'],
-			'value'       => $value,
+			'value'       => $this->args['value'],
 			'data-field'  => $this->type,
 			'data-slug'   => $this->args['slug'],
 			'class'       => array(
