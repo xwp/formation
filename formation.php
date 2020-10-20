@@ -3,7 +3,7 @@
  * Plugin Name: Formation
  * Plugin URI:
  * Description: Form builder.
- * Version: 0.0.2
+ * Version: 0.0.3
  * Author:  XWP
  * Author URI: https://xwp.co
  * License: GPLv2+
