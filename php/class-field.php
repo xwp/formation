@@ -156,10 +156,9 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 	}
 
 	/**
-	 * Setup the object.
+	 * Registers the block instance.
 	 */
-	public function register_field_instance( $block ) {
-
+	private function prepare_block_for_registration( $block ) {
 		if ( isset( $this->fields[ $block['blockName'] ] ) ) {
 			// Check the field has not already been registered.
 			if ( ! isset( $this->instances[ $block['attrs']['_unique_id'] ] ) ) {
@@ -180,11 +179,51 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 					}
 				}
 				$init = $this->get_field_init( $this->fields[ $block['blockName'] ] );
+
 				if ( $init ) {
-					$field                                               = new $init( $block['attrs'], $this->plugin, $block );
+					$field = new $init( $block['attrs'], $this->plugin, $block );
 					$this->instances[ $field->get_args( '_unique_id' ) ] = $field;
 					$block['formationField']                             = $field;
 				}
+			}
+		}
+
+		return $block;
+	}
+
+	/**
+	 * Setup the object.
+	 */
+	public function register_field_instance( $block ) {
+
+		/**
+		 * Since 5.5.0, Inner blocks will not pass through the 'render_block_data' filter.
+		 * For that reason we would need to take the extra step of looping inside a parent block
+		 * and registering the inner blocks. This assumes the inner block is only ONE level deep.
+		 */
+
+		// Exit early for non-Formation blocks.
+		if ( empty( $block['innerBlocks'] ) && ! isset( $this->fields[ $block['blockName'] ] ) ) {
+			return $block;
+		}
+
+		// Register standalone blocks.
+		if ( empty( $block['innerBlocks'] ) ) {
+			$this->prepare_block_for_registration( $block );
+			return $block;
+		}
+
+		if ( 'formation/repeatable' === $block['blockName'] ) {
+			$this->prepare_block_for_registration( $block );
+		}
+
+		// Register inner blocks.
+		foreach ( $block['innerBlocks'] as &$inner_block ) {
+			if ( ! empty( $inner_block['innerBlocks'] ) ) {
+				// Loop inside container to retrieve inner blocks.
+				$this->register_field_instance( $inner_block );
+			} else {
+				$this->prepare_block_for_registration( $inner_block );
 			}
 		}
 
