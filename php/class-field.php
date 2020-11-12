@@ -213,9 +213,18 @@ class Field implements Component\Pre_Setup, Component\Setup, Component\Post_Setu
 			return $block;
 		}
 
+		if ( 'formation/repeatable' === $block['blockName'] ) {
+			$this->prepare_block_for_registration( $block );
+		}
+
 		// Register inner blocks.
 		foreach ( $block['innerBlocks'] as &$inner_block ) {
-			$this->prepare_block_for_registration( $inner_block );
+			if ( ! empty( $inner_block['innerBlocks'] ) ) {
+				// Loop inside container to retrieve inner blocks.
+				$this->register_field_instance( $inner_block );
+			} else {
+				$this->prepare_block_for_registration( $inner_block );
+			}
 		}
 
 		return $block;
