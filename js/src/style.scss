@@ -190,7 +190,7 @@
 			font-size        : 14px;
 			font-weight      : $normal;
 			text-align       : center;
-			transition       : color 90ms $ease-out-cubic, border-color 90ms $ease-out-cubic, background-color 90ms $ease-out-cubic;
+			transition       : color 300ms $ease-out-cubic, border-color 300ms $ease-out-cubic, background-color 300ms $ease-out-cubic;
 
 			&[disabled],
 			&.gf-default-disabled {
