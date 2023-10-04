@@ -311,8 +311,8 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 				wp_register_script(
 					'formation-' . $asset . '-js',
 					$this->plugin->asset_url( 'js/dist/' . $asset . '.js' ),
-					$assets_dep['dependencies'],
-					$assets_dep['version'],
+					$assets_dep['dependencies'] ?? null,
+					$assets_dep['version'] ?? null,
 					false
 				);
 
@@ -321,7 +321,7 @@ class Entry_List_Page implements Component\Assets, Component\Setup {
 						'formation-' . $asset . '-css',
 						$this->plugin->asset_url( 'css/' . $asset . '.css' ),
 						null,
-						$assets_dep['version']
+						$assets_dep['version'] ?? null,
 					);
 				}
 			}
