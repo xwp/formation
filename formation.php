@@ -3,7 +3,7 @@
  * Plugin Name: Formation
  * Plugin URI:
  * Description: Form builder.
- * Version: 0.0.3
+ * Version: 1.0.0
  * Author:  XWP
  * Author URI: https://xwp.co
  * License: GPLv2+
@@ -30,12 +30,10 @@
 
 if ( version_compare( phpversion(), '5.6', '>=' ) ) {
 	require_once __DIR__ . '/instance.php';
-} else {
-	if ( defined( 'WP_CLI' ) ) {
+} elseif ( defined( 'WP_CLI' ) ) {
 		WP_CLI::warning( _formation_php_version_text() );
-	} else {
-		add_action( 'admin_notices', '_formation_php_version_error' );
-	}
+} else {
+	add_action( 'admin_notices', '_formation_php_version_error' );
 }
 
 /**
